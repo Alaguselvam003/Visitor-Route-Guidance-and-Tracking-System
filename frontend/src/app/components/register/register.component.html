@@ -1,0 +1,54 @@
+<div class="container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+  <div class="glass-panel animate-fade-in" style="width: 100%; max-width: 480px; padding: 3rem;">
+      <div class="text-center mb-4">
+          <h2 style="color: var(--primary-color);">Visitor Registration</h2>
+          <p>Register to receive your digital entry pass.</p>
+      </div>
+
+      <div *ngIf="alertMsg" class="alert" [ngClass]="'alert-' + alertType">{{ alertMsg }}</div>
+
+      <!-- Registration Form -->
+      <form *ngIf="!showOtpForm" (ngSubmit)="onRegister()">
+          <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" [(ngModel)]="user.name" name="name" required placeholder="John Doe">
+          </div>
+          <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" [(ngModel)]="user.email" name="email" required placeholder="john@company.com">
+          </div>
+          <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="text" class="form-control" [(ngModel)]="user.phone" name="phone" required placeholder="9988776655">
+          </div>
+          <div class="form-group">
+              <label class="form-label">ID Number (Aadhaar/PAN/Passport)</label>
+              <input type="text" class="form-control" [(ngModel)]="user.idNumber" name="idNumber" required placeholder="ID-89249">
+          </div>
+          <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-control" [(ngModel)]="user.password" name="password" required placeholder="••••••••">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block mt-4" [disabled]="isLoading">
+              {{ isLoading ? 'Processing...' : 'Register Visitor' }}
+          </button>
+      </form>
+
+      <!-- OTP Form -->
+      <form *ngIf="showOtpForm" (ngSubmit)="onVerify()">
+          <p class="text-center mb-4" style="color: var(--secondary-color);">Enter OTP sent to {{ user.email }}</p>
+          <div class="form-group">
+              <input type="text" class="form-control" [(ngModel)]="otp" name="otp" required placeholder="123456" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem;" maxlength="6">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block mt-4" [disabled]="isLoading">
+              {{ isLoading ? 'Verifying...' : 'Verify & Create Pass' }}
+          </button>
+      </form>
+
+      <div class="text-center mt-4">
+          <p>Already registered? <a routerLink="/login" style="color: var(--primary-color); text-decoration: none;">Login here</a></p>
+      </div>
+  </div>
+</div>
