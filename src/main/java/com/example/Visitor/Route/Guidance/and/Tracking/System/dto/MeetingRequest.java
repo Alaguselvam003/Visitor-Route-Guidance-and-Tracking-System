@@ -10,8 +10,7 @@ public class MeetingRequest {
         return qrToken;
     }
 
-    public void setQrToken(
-            String qrToken) {
+    public void setQrToken(String qrToken) {
         this.qrToken = qrToken;
     }
 
@@ -19,8 +18,7 @@ public class MeetingRequest {
         return durationMinutes;
     }
 
-    public void setDurationMinutes(
-            Integer durationMinutes) {
+    public void setDurationMinutes(Integer durationMinutes) {
         this.durationMinutes = durationMinutes;
     }
 }

@@ -7,7 +7,6 @@
 
       <div *ngIf="alertMsg" class="alert" [ngClass]="'alert-' + alertType">{{ alertMsg }}</div>
 
-      <!-- Registration Form -->
       <form *ngIf="!showOtpForm" (ngSubmit)="onRegister()">
           <div class="form-group">
               <label class="form-label">Full Name</label>
@@ -35,7 +34,6 @@
           </button>
       </form>
 
-      <!-- OTP Form -->
       <form *ngIf="showOtpForm" (ngSubmit)="onVerify()">
           <p class="text-center mb-4" style="color: var(--secondary-color);">Enter OTP sent to {{ user.email }}</p>
           <div class="form-group">

@@ -21,18 +21,18 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
   visitorName = 'Guest Visitor';
   visitorEmail = 'visitor@company.com';
   ticketCode = 'V-1024';
-  
+
   currentStep = 0;
   isSimulating = false;
   isMuted = false;
   isDeviated = false;
   beaconLog: string[] = [];
-  
+
   dotX = 110;
   dotY = 160;
 
   constructor(private api: ApiService) {}
-  
+
   steps: NavStep[] = [
     {
       name: 'Security Gate',
@@ -56,14 +56,14 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
       y: 110
     }
   ];
-  
+
   private simulationInterval: any;
 
   ngOnInit() {
     const savedName = localStorage.getItem('user_name');
     const savedEmail = localStorage.getItem('user_email');
     const savedCode = localStorage.getItem('qr_token');
-    
+
     if (savedName) this.visitorName = savedName;
     if (savedEmail) this.visitorEmail = savedEmail;
     if (savedCode) {
@@ -72,7 +72,7 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
       const randomCode = Math.floor(1000 + Math.random() * 9000);
       this.ticketCode = `V-${randomCode}`;
     }
-    
+
     this.updateCoordinates();
   }
 
@@ -85,14 +85,11 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
     const step = this.steps[this.currentStep];
     this.dotX = step.x;
     this.dotY = step.y;
-    
-    // Voice directions reader
+
     this.speak(`${step.title}. ${step.instructions}`);
-    
-    // Log BLE beacon transmitter scan
+
     this.logBeacon(step.name);
-    
-    // Sync zone state back to the Admin/Security database
+
     if (this.ticketCode) {
       const zoneName = step.name.toUpperCase().replace(/\s+/g, '_');
       this.api.simulateZone(this.ticketCode, zoneName).subscribe();
@@ -181,10 +178,10 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
     this.isDeviated = !this.isDeviated;
     if (this.isDeviated) {
       this.clearSimulation();
-      // Jump visitor dot to Server Room (Restricted Area)
+
       this.dotX = 450;
       this.dotY = 240;
-      
+
       const deviationMsg = "Path Deviation Warning! You have entered a restricted server room. Recalculating detour route back to reception desk.";
       this.speak(deviationMsg);
 

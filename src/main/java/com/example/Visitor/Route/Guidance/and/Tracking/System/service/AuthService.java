@@ -34,7 +34,7 @@ public class AuthService {
     @PostConstruct
     public void seedUsers() {
         if (userRepository.count() == 0) {
-            // Seed Admin
+
             User admin = new User();
             admin.setName("System Admin");
             admin.setEmail("admin@company.com");
@@ -43,7 +43,6 @@ public class AuthService {
             admin.setVerified(true);
             userRepository.save(admin);
 
-            // Seed Receptionist
             User reception = new User();
             reception.setName("Receptionist");
             reception.setEmail("reception@company.com");
@@ -52,7 +51,6 @@ public class AuthService {
             reception.setVerified(true);
             userRepository.save(reception);
 
-            // Seed Security
             User security = new User();
             security.setName("Security Guard");
             security.setEmail("security@company.com");
@@ -61,7 +59,6 @@ public class AuthService {
             security.setVerified(true);
             userRepository.save(security);
 
-            // Seed Host
             User host = new User();
             host.setName("Meeting Host");
             host.setEmail("host@company.com");
@@ -81,7 +78,7 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole("HOST"); // Default role for manual registrations
+        user.setRole("HOST");
 
         String otp= String.valueOf((int)((Math.random()*900000)+100000));
         user.setOtp(otp);
@@ -122,7 +119,7 @@ public class AuthService {
     }
 
     public String login(String email, String password) {
-        // 1. Search in Staff/Users table
+
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
             if (passwordEncoder.matches(password, user.getPassword())) {
@@ -132,7 +129,6 @@ public class AuthService {
             return "Invalid Credentials";
         }
 
-        // 2. Search in Visitors table
         Visitor visitor = visitorRepository.findByEmail(email).orElse(null);
         if (visitor != null) {
             if (!visitor.isVerified()) {

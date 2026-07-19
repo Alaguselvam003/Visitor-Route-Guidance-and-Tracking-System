@@ -66,7 +66,7 @@ interface ReceptionCheckin {
         <div style="max-height: 150px; overflow-y: auto;">
           <div *ngFor="let alert of getActiveAlerts()" style="background: #ffffff; border-left: 4px solid #ef4444; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; border-top: 1px solid #f3f4f6; border-right: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6;">
             <span>
-              <strong style="color: #111827;">{{ alert.name }}</strong> ({{ alert.qrToken }}): 
+              <strong style="color: #111827;">{{ alert.name }}</strong> ({{ alert.qrToken }}):
               <span style="color: #b91c1c; font-weight: bold; font-family: monospace; margin-left: 0.5rem;">{{ alert.securityAlert }}</span>
             </span>
             <button class="btn" style="background: #f3f4f6; color: #374151; padding: 0.25rem 0.6rem; font-size: 0.75rem; border: 1px solid #cbd5e1; border-radius: 4px;" (click)="clearAlert(alert.qrToken!)">Acknowledge</button>
@@ -77,7 +77,7 @@ interface ReceptionCheckin {
       <!-- Live Map Card -->
       <div class="card" style="margin-bottom: 2rem;">
         <h3 style="color: #1f2937; font-size: 1.15rem; margin-bottom: 1.25rem;">Live Visitor Tracking Map</h3>
-        
+
         <div style="border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden;">
           <svg viewBox="0 0 800 320" width="100%" style="display: block; background: #f1f5f9;">
             <!-- Security Gate -->
@@ -212,17 +212,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   stats = { total: 0, waiting: 0, approved: 0, inside: 0, exited: 0 };
   visitors: Visitor[] = [];
   receptionQueue: ReceptionCheckin[] = [];
-  
+
   roomCounts = { gate: 0, reception: 0, meeting: 0 };
   searchQuery = '';
-  
+
   private pollingTimer: any;
 
   constructor(private api: ApiService) {}
 
   ngOnInit() {
     this.refreshAll();
-    // Set up active polling every 5 seconds to simulate real-time tracking
+
     this.pollingTimer = setInterval(() => this.refreshAll(), 5000);
   }
 
@@ -233,14 +233,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   refreshAll() {
-    // 1. Fetch KPI Statistics
+
     this.api.getDashboard().subscribe({
       next: (res) => {
         this.stats = res;
       }
     });
 
-    // 2. Fetch Reception Queue to check positions
     this.api.getReceptionQueue().subscribe({
       next: (queue) => {
         this.receptionQueue = queue;
@@ -248,7 +247,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    // 3. Fetch Full Visitor Directory
     this.api.getVisitors().subscribe({
       next: (list) => {
         this.visitors = list.sort((a, b) => b.id - a.id);

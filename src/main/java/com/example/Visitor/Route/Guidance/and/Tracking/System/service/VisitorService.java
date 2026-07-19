@@ -47,8 +47,8 @@ public class VisitorService {
 
         public String register(VisitorRequest request) {
                 try {
-                        // Blacklist check (mock values + database records)
-                        if ("blacklisted@test.com".equalsIgnoreCase(request.getEmail()) || 
+
+                        if ("blacklisted@test.com".equalsIgnoreCase(request.getEmail()) ||
                             "9999999999".equals(request.getPhone())) {
                                 return "Registration Failed: Visitor is blacklisted.";
                         }
@@ -73,7 +73,6 @@ public class VisitorService {
                                 return "Account already verified. Please login";
                         }
 
-                        // Check other fields for blacklist status
                         Optional<Visitor> existingByPhone = visitorRepository.findByPhone(request.getPhone());
                         if (existingByPhone.isPresent() && existingByPhone.get().isBlacklisted()) {
                                 return "Registration Failed: Visitor is blacklisted.";
@@ -85,8 +84,7 @@ public class VisitorService {
 
                         Visitor visitor = new Visitor();
 
-                        // Duplicate visitor detection
-                        if (visitorRepository.existsByPhone(request.getPhone()) || 
+                        if (visitorRepository.existsByPhone(request.getPhone()) ||
                             visitorRepository.existsByIdNumber(request.getIdNumber())) {
                                 visitor.setDuplicateDetected(true);
                         }
@@ -130,7 +128,7 @@ public class VisitorService {
 
                 visitor.setVerified(true);
                 visitor.setQrToken("V-" + (1000 + new java.util.Random().nextInt(9000)));
-                // Set QR pass validity (expiry in 4 hours)
+
                 visitor.setQrExpiry(LocalDateTime.now().plusHours(4));
 
                 visitorRepository.save(visitor);
@@ -148,7 +146,7 @@ public class VisitorService {
                         return "Invalid QR";
                 }
 
-                if (visitor.getQrExpiry() == null || 
+                if (visitor.getQrExpiry() == null ||
                     visitor.getQrExpiry().isBefore(LocalDateTime.now())) {
 
                         return "QR Expired";

@@ -19,7 +19,6 @@ export class ApiService {
     return headers;
   }
 
-  // Auth
   register(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/visitor/register`, data, { responseType: 'text' });
   }
@@ -32,12 +31,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/visitor/verify-otp?email=${email}&otp=${otp}`, null, { responseType: 'text' });
   }
 
-  // Gate
   gateEntry(token: string, gate: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/visitor/gate-entry?token=${token}&gate=${gate}`, null, { responseType: 'text' });
   }
 
-  // Reception
   checkin(qrToken: string, host: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/reception/checkin`, { qrToken, host }, { responseType: 'text' });
   }
@@ -54,12 +51,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/reception/meeting/start`, { qrToken, durationMinutes }, { responseType: 'text' });
   }
 
-  // Visitor List
   getVisitors(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/visitor/list`);
   }
 
-  // Dashboard & Analytics
   getDashboard(): Observable<any> {
     return this.http.get(`${this.baseUrl}/dashboard`, { headers: this.getHeaders() });
   }

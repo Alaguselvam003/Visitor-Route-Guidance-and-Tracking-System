@@ -14,13 +14,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public String login(
-            String email,
-            String password
-    ) {
+    public String login(String email,String password){
 
-        Optional<User> optionalUser =
-                userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
         if (optionalUser.isPresent()) {
 

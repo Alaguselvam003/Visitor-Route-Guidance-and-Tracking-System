@@ -17,113 +17,69 @@ public class VisitorController {
     private VisitorService service;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(
-            @RequestBody VisitorRequest request) {
+    public ResponseEntity<?> register( @RequestBody VisitorRequest request) {
 
         return ResponseEntity.ok(
                 service.register(request));
     }
 
     @PostMapping("/verify-otp")
-    public String verifyOtp(
-
-            @RequestParam String email,
-
-            @RequestParam String otp
-
-    ) {
-
-        return service.verifyOtp(
-                email,
-                otp);
-
+    public String verifyOtp( @RequestParam String email, @RequestParam String otp) {
+        return service.verifyOtp(email,otp);
     }
 
     @GetMapping("/qr/{token}")
-    public ResponseEntity<?> getVisitorByQr(
-            @PathVariable String token) {
-        return ResponseEntity.ok(
-                service.getVisitorByQr(token));
+    public ResponseEntity<?> getVisitorByQr(@PathVariable String token){
+        return ResponseEntity.ok(service.getVisitorByQr(token));
     }
 
     @GetMapping("/gate-scan/{qrToken}")
+    public String gateScan(@PathVariable String qrToken){
 
-    public String gateScan(
-
-            @PathVariable String qrToken
-
-    ) {
-
-        return service.scanQr(
-                qrToken);
+        return service.scanQr(qrToken);
 
     }
 
     @PostMapping("/scan")
-    public String scanQr(
-            @RequestParam String token) {
+    public String scanQr(@RequestParam String token){
 
         return service.validateQr(token);
     }
 
     @PostMapping("/checkin")
-    public String receptionCheckin(
+    public String receptionCheckin(@RequestBody ReceptionRequest request) {
 
-            @RequestBody ReceptionRequest request
-
-    ) {
-
-        return service.receptionCheckin(
-
-                request.getQrToken(),
-
-                request.getHost()
-
-        );
+        return service.receptionCheckin(request.getQrToken(),request.getHost());
 
     }
 
     @PostMapping("/checkout")
-    public String checkOut(
-            @RequestParam String token) {
+    public String checkOut(@RequestParam String token) {
 
         return service.checkOut(token);
     }
 
     @GetMapping("/journey")
-    public String journey(
-            @RequestParam String token) {
+    public String journey(@RequestParam String token) {
 
         return service.getJourney(token);
     }
 
     @PostMapping("/gate")
-    public String gate(
-            @RequestParam String token,
-            @RequestParam String gate) {
+    public String gate(@RequestParam String token,@RequestParam String gate) {
 
         return service.gateEntry(token, gate);
     }
 
     @PostMapping("/gate-entry")
-    public String gateEntry(
+    public String gateEntry( @RequestParam String token, @RequestParam String gate) {
 
-            @RequestParam String token,
-
-            @RequestParam String gate
-
-    ) {
-
-        return service.gateEntry(
-                token,
-                gate);
+        return service.gateEntry(token, gate);
 
     }
 
     @PostMapping("/reception")
-    public String reception(
-            @RequestParam String token,
-            @RequestParam String host) {
+    public String reception( @RequestParam String token, @RequestParam String host) {
 
         return service.receptionCheckin(token, host);
     }
@@ -181,31 +137,19 @@ public class VisitorController {
 
     @PostMapping("/exit/{qrToken}")
 
-    public String exit(
+    public String exit(@PathVariable String qrToken) {
 
-            @PathVariable String qrToken
-
-    ) {
-
-        return service.gateExit(
-                qrToken);
+        return service.gateExit(qrToken);
 
     }
 
     @PostMapping("/assign-nfc")
-    public String assignNfc(
-            @RequestParam String qrToken,
-            @RequestParam String nfcTag
-    ) {
+    public String assignNfc(@RequestParam String qrToken,@RequestParam String nfcTag) {
         return service.assignNfc(qrToken, nfcTag);
     }
 
     @PostMapping("/simulate-zone")
-    public String simulateZone(
-            @RequestParam String qrToken,
-            @RequestParam String zone,
-            @RequestParam(required = false) String alert
-    ) {
+    public String simulateZone(@RequestParam String qrToken, @RequestParam String zone, @RequestParam(required = false) String alert) {
         return service.simulateZone(qrToken, zone, alert);
     }
 }
