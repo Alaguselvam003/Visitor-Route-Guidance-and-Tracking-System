@@ -66,6 +66,7 @@ public class VisitorService {
                                         old.setPassword(passwordEncoder.encode(request.getPassword()));
                                         old.setOtp(generateOtp());
                                         old.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+                                        old.setVisitorStatus("REGISTERED");
                                         visitorRepository.save(old);
                                         emailService.sendOtp(old.getEmail(), old.getOtp());
                                         return "OTP Sent Again";
@@ -95,6 +96,7 @@ public class VisitorService {
                         visitor.setIdNumber(request.getIdNumber());
                         visitor.setPassword(passwordEncoder.encode(request.getPassword()));
                         visitor.setVerified(false);
+                        visitor.setVisitorStatus("REGISTERED");
                         visitor.setOtp(generateOtp());
                         visitor.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
 
@@ -127,7 +129,10 @@ public class VisitorService {
                 }
 
                 visitor.setVerified(true);
-                visitor.setQrToken("V-" + (1000 + new java.util.Random().nextInt(9000)));
+                String passCode = "VP-2026-" + String.format("%06d", visitor.getId());
+                visitor.setPassCode(passCode);
+                visitor.setQrToken(passCode);
+                visitor.setVisitorStatus("PASS_GENERATED");
 
                 visitor.setQrExpiry(LocalDateTime.now().plusHours(4));
 
@@ -284,6 +289,9 @@ public class VisitorService {
                         return "Invalid Visitor";
                 }
 
+                visitor.setVisitorStatus("RECEPTION_CHECKIN");
+                repo.save(visitor);
+
                 ReceptionCheckin r = new ReceptionCheckin();
 
                 r.setQrToken(token);
@@ -344,6 +352,8 @@ public class VisitorService {
 
                         visitor.setExitTime(
                                         LocalDateTime.now());
+
+                        visitor.setVisitorStatus("MEETING_COMPLETED");
 
                         repo.save(visitor);
 
@@ -469,6 +479,8 @@ public class VisitorService {
                 visitor.setExitTime(
                                 LocalDateTime.now());
 
+                visitor.setVisitorStatus("EXITED");
+
                 visitorRepository.save(visitor);
                 movementService.log(qrToken,
                                 "EXIT_GATE");
@@ -495,6 +507,9 @@ public class VisitorService {
                                 .orElseThrow(() -> new RuntimeException("Visitor not found"));
                 visitor.setCurrentZone(zone);
                 visitor.setZoneEntryTime(LocalDateTime.now());
+                if ("HOST_APPROVED".equals(visitor.getVisitorStatus())) {
+                        visitor.setVisitorStatus("ROUTE_STARTED");
+                }
                 if (alert != null && !alert.isEmpty()) {
                         visitor.setSecurityAlert(alert);
                 } else if ("RESTRICTED".equalsIgnoreCase(zone)) {

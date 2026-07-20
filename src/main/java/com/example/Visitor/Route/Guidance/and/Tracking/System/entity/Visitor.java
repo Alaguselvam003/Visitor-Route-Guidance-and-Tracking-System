@@ -53,6 +53,16 @@ public class Visitor {
 
     private String securityAlert;
 
+    private String passCode;
+
+    private boolean gateVerified = false;
+
+    private LocalDateTime gateVerifiedAt;
+
+    private String verifiedBy;
+
+    private String visitorStatus = "REGISTERED";
+
     public Long getId() {
         return id;
     }
@@ -211,5 +221,45 @@ public class Visitor {
 
     public void setSecurityAlert(String securityAlert) {
         this.securityAlert = securityAlert;
+    }
+
+    public String getPassCode() {
+        return passCode;
+    }
+
+    public void setPassCode(String passCode) {
+        this.passCode = passCode;
+    }
+
+    public boolean isGateVerified() {
+        return gateVerified;
+    }
+
+    public void setGateVerified(boolean gateVerified) {
+        this.gateVerified = gateVerified;
+    }
+
+    public LocalDateTime getGateVerifiedAt() {
+        return gateVerifiedAt;
+    }
+
+    public void setGateVerifiedAt(LocalDateTime gateVerifiedAt) {
+        this.gateVerifiedAt = gateVerifiedAt;
+    }
+
+    public String getVerifiedBy() {
+        return verifiedBy;
+    }
+
+    public void setVerifiedBy(String verifiedBy) {
+        this.verifiedBy = verifiedBy;
+    }
+
+    public String getVisitorStatus() {
+        return visitorStatus;
+    }
+
+    public void setVisitorStatus(String visitorStatus) {
+        this.visitorStatus = visitorStatus;
     }
 }

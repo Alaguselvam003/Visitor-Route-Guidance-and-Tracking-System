@@ -17,6 +17,9 @@ public class HostService {
     @Autowired
     private MovementService movementService;
 
+    @Autowired
+    private com.example.Visitor.Route.Guidance.and.Tracking.System.repository.VisitorRepository visitorRepository;
+
     public String approve(
             String qrToken
     ) {
@@ -35,6 +38,13 @@ public class HostService {
         r.setStatus("APPROVED");
 
         repo.save(r);
+
+        com.example.Visitor.Route.Guidance.and.Tracking.System.entity.Visitor visitor =
+                visitorRepository.findByQrToken(qrToken).orElse(null);
+        if (visitor != null) {
+            visitor.setVisitorStatus("HOST_APPROVED");
+            visitorRepository.save(visitor);
+        }
 
         movementService.log(
                 qrToken,

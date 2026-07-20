@@ -24,6 +24,8 @@ public interface VisitorRepository
 
         Optional<Visitor> findByQrToken(String qrToken);
 
+        Optional<Visitor> findByPassCode(String passCode);
+
         long countByInside(boolean inside);
 
         long countByInsideTrue();

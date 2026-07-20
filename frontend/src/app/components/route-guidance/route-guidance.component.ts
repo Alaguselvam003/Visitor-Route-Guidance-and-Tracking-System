@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { Router } from '@angular/router';
+import * as QRCode from 'qrcode';
 
 interface NavStep {
   name: string;
@@ -13,14 +16,17 @@ interface NavStep {
 @Component({
   selector: 'app-route-guidance',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './route-guidance.component.html',
   styleUrls: ['./route-guidance.component.css']
 })
 export class RouteGuidanceComponent implements OnInit, OnDestroy {
   visitorName = 'Guest Visitor';
   visitorEmail = 'visitor@company.com';
-  ticketCode = 'V-1024';
+  ticketCode = '';
+  visitorId: number | null = null;
+  visitorStatus = 'REGISTERED';
+  gateVerified = false;
 
   currentStep = 0;
   isSimulating = false;
@@ -31,7 +37,13 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
   dotX = 110;
   dotY = 160;
 
-  constructor(private api: ApiService) {}
+  hostName = 'Meeting Host';
+  isCheckingIn = false;
+  showSuccessAlert = false;
+  isInitialLoad = true;
+
+  private pollingInterval: any;
+  private simulationInterval: any;
 
   steps: NavStep[] = [
     {
@@ -57,7 +69,7 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
     }
   ];
 
-  private simulationInterval: any;
+  constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit() {
     const savedName = localStorage.getItem('user_name');
@@ -68,16 +80,174 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
     if (savedEmail) this.visitorEmail = savedEmail;
     if (savedCode) {
       this.ticketCode = savedCode;
-    } else {
-      const randomCode = Math.floor(1000 + Math.random() * 9000);
-      this.ticketCode = `V-${randomCode}`;
     }
 
+    this.fetchVisitorDetails();
     this.updateCoordinates();
+    this.isInitialLoad = false;
   }
 
   ngOnDestroy() {
     this.clearSimulation();
+    this.stopStatusPolling();
+  }
+
+  fetchVisitorDetails() {
+    if (!this.ticketCode) return;
+
+    this.api.getVisitorByQr(this.ticketCode).subscribe({
+      next: (res: any) => {
+        this.visitorName = res.name;
+        this.visitorEmail = res.email;
+        this.visitorStatus = res.visitorStatus || 'REGISTERED';
+        this.gateVerified = res.gateVerified;
+        this.visitorId = res.id;
+
+        // Generate QR code dynamically on canvas
+        this.generateQrCode();
+
+        // Setup polling if they are waiting for security verification
+        if (this.visitorStatus === 'PASS_GENERATED') {
+          this.startStatusPolling();
+        } else {
+          this.stopStatusPolling();
+          if (this.visitorStatus === 'GATE_VERIFIED' && !this.showSuccessAlert) {
+            this.showSuccessAlert = true;
+          }
+        }
+      },
+      error: (err) => {
+        console.error("Failed to load visitor details:", err);
+      }
+    });
+  }
+
+  generateQrCode() {
+    setTimeout(() => {
+      const canvas = document.getElementById('qrCanvas') as HTMLCanvasElement;
+      if (canvas && this.ticketCode) {
+        QRCode.toCanvas(canvas, this.ticketCode, { width: 140, margin: 1 }, (error) => {
+          if (error) console.error("Error generating QR code on canvas:", error);
+        });
+      }
+    }, 100);
+  }
+
+  startStatusPolling() {
+    this.stopStatusPolling();
+    this.pollingInterval = setInterval(() => {
+      if (this.ticketCode) {
+        this.api.getVisitorByQr(this.ticketCode).subscribe({
+          next: (res: any) => {
+            const newStatus = res.visitorStatus || 'REGISTERED';
+            if (newStatus !== this.visitorStatus) {
+              this.visitorStatus = newStatus;
+              this.gateVerified = res.gateVerified;
+              
+              if (newStatus === 'GATE_VERIFIED') {
+                this.showSuccessAlert = true;
+                this.stopStatusPolling();
+              }
+              this.fetchVisitorDetails();
+            }
+          },
+          error: (err) => console.error("Error polling visitor status:", err)
+        });
+      }
+    }, 3000);
+  }
+
+  stopStatusPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+    }
+  }
+
+  submitReceptionCheckin() {
+    if (!this.ticketCode) return;
+    this.isCheckingIn = true;
+    this.api.visitorCheckin(this.ticketCode, this.hostName).subscribe({
+      next: () => {
+        this.isCheckingIn = false;
+        this.fetchVisitorDetails();
+      },
+      error: (err) => {
+        this.isCheckingIn = false;
+        alert("Reception check-in failed: " + (err.error || err.message));
+      }
+    });
+  }
+
+  startRouteGuidance() {
+    if (!this.ticketCode) return;
+    this.api.simulateZone(this.ticketCode, 'SECURITY_GATE').subscribe({
+      next: () => {
+        this.fetchVisitorDetails();
+      },
+      error: (err) => {
+        console.error("Failed to start route:", err);
+      }
+    });
+  }
+
+  endMeeting() {
+    if (!this.ticketCode) return;
+    this.api.completeMeeting(this.ticketCode).subscribe({
+      next: () => {
+        this.fetchVisitorDetails();
+      },
+      error: (err) => {
+        console.error("Failed to end meeting:", err);
+      }
+    });
+  }
+
+  getStepStatus(stepKey: string): 'completed' | 'active' | 'locked' {
+    const statusOrder = ['REGISTERED', 'PASS_GENERATED', 'GATE_VERIFIED', 'RECEPTION_CHECKIN', 'HOST_APPROVED', 'ROUTE_STARTED', 'MEETING_STARTED', 'MEETING_COMPLETED', 'EXITED'];
+    const currentIdx = statusOrder.indexOf(this.visitorStatus);
+    
+    if (stepKey === 'REGISTERED') {
+      return 'completed';
+    }
+    if (stepKey === 'PASS_GENERATED') {
+      return currentIdx >= 1 ? 'completed' : 'active';
+    }
+    if (stepKey === 'GATE_VERIFIED') {
+      if (currentIdx > 2) return 'completed';
+      if (currentIdx === 2) return 'active';
+      if (currentIdx === 1) return 'active';
+      return 'locked';
+    }
+    if (stepKey === 'RECEPTION_CHECKIN') {
+      if (currentIdx > 3) return 'completed';
+      if (currentIdx === 3) return 'active';
+      if (currentIdx === 2) return 'active';
+      return 'locked';
+    }
+    if (stepKey === 'HOST_APPROVED') {
+      if (currentIdx > 4) return 'completed';
+      if (currentIdx === 4) return 'active';
+      if (currentIdx === 3) return 'active';
+      return 'locked';
+    }
+    if (stepKey === 'ROUTE_STARTED') {
+      if (currentIdx > 5) return 'completed';
+      if (currentIdx === 5) return 'active';
+      if (currentIdx === 4) return 'active';
+      return 'locked';
+    }
+    if (stepKey === 'MEETING_STARTED') {
+      if (currentIdx >= 7) return 'completed';
+      if (currentIdx === 6) return 'active';
+      if (currentIdx === 5) return 'active';
+      return 'locked';
+    }
+    return 'locked';
+  }
+
+  navigateToGateVerification() {
+    this.router.navigate(['/gate']);
   }
 
   updateCoordinates() {
@@ -86,8 +256,9 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
     this.dotX = step.x;
     this.dotY = step.y;
 
-    this.speak(`${step.title}. ${step.instructions}`);
-
+    if (!this.isInitialLoad) {
+      this.speak(`${step.title}. ${step.instructions}`);
+    }
     this.logBeacon(step.name);
 
     if (this.ticketCode) {

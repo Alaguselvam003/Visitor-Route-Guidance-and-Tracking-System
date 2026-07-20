@@ -7,6 +7,7 @@ import { AdminDashboardComponent } from './components/admin-dashboard/admin-dash
 import { RouteGuidanceComponent } from './components/route-guidance/route-guidance.component';
 import { authGuard } from './guards/auth.guard';
 import { AccessDeniedComponent } from './components/access-denied/access-denied.component';
+import { HostComponent } from './components/host/host.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -16,7 +17,7 @@ export const routes: Routes = [
     path: 'gate', 
     component: GateKioskComponent, 
     canActivate: [authGuard], 
-    data: { roles: ['SECURITY', 'ADMIN'] } 
+    data: { roles: ['SECURITY', 'ADMIN', 'VISITOR'] } 
   },
   { 
     path: 'reception', 
@@ -35,6 +36,12 @@ export const routes: Routes = [
     component: RouteGuidanceComponent, 
     canActivate: [authGuard], 
     data: { roles: ['VISITOR'] } 
+  },
+  { 
+    path: 'host', 
+    component: HostComponent, 
+    canActivate: [authGuard], 
+    data: { roles: ['HOST'] } 
   },
   { path: 'access-denied', component: AccessDeniedComponent }
 ];

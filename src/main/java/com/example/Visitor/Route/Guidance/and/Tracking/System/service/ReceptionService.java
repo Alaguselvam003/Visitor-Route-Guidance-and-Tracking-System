@@ -46,6 +46,9 @@ public class ReceptionService {
                         return "Visitor already checked-in";
                 }
 
+                visitor.setVisitorStatus("RECEPTION_CHECKIN");
+                visitorRepository.save(visitor);
+
                 ReceptionCheckin r = new ReceptionCheckin();
 
                 r.setQrToken(qrToken);
@@ -108,6 +111,9 @@ public class ReceptionService {
                 if (decision.equalsIgnoreCase("APPROVE")) {
 
                         checkin.setStatus("APPROVED");
+
+                        visitor.setVisitorStatus("HOST_APPROVED");
+                        visitorRepository.save(visitor);
 
                         movementService.log(
                                         qrToken,
@@ -181,6 +187,12 @@ public class ReceptionService {
 
                 receptionRepo.save(
                                 checkin);
+
+                Visitor visitor = visitorRepository.findByQrToken(qrToken).orElse(null);
+                if (visitor != null) {
+                        visitor.setVisitorStatus("MEETING_STARTED");
+                        visitorRepository.save(visitor);
+                }
 
                 movementService.log(
 

@@ -57,7 +57,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/admin/**", "/api/visitor/list").hasRole("ADMIN")
                         .requestMatchers("/api/reception/**").hasAnyRole("RECEPTIONIST", "ADMIN")
-                        .requestMatchers("/api/visitor/gate-scan/**").hasAnyRole("SECURITY", "ADMIN")
+                        .requestMatchers("/api/visitor/gate-scan/**", "/api/security/**").hasAnyRole("SECURITY", "ADMIN", "VISITOR")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

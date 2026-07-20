@@ -39,6 +39,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/reception/checkin`, { qrToken, host }, { responseType: 'text' });
   }
 
+  visitorCheckin(qrToken: string, host: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/visitor/checkin`, { qrToken, host }, { responseType: 'text' });
+  }
+
   getReceptionQueue(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/reception/list`);
   }
@@ -66,5 +70,25 @@ export class ApiService {
   simulateZone(qrToken: string, zone: string, alert?: string): Observable<any> {
     const alertParam = alert ? `&alert=${encodeURIComponent(alert)}` : '';
     return this.http.post(`${this.baseUrl}/visitor/simulate-zone?qrToken=${qrToken}&zone=${zone}${alertParam}`, null, { responseType: 'text' });
+  }
+
+  verifyPassCode(passCode: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/security/verify-pass`, { passCode });
+  }
+
+  getVisitorByQr(token: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/visitor/qr/${token}`);
+  }
+
+  getHostWaiting(hostName: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/host/waiting?hostName=${encodeURIComponent(hostName)}`);
+  }
+
+  hostApproveVisitor(qrToken: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/host/approve?qrToken=${encodeURIComponent(qrToken)}`, null, { responseType: 'text' });
+  }
+
+  completeMeeting(token: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/visitor/meeting/complete?token=${token}`, null, { responseType: 'text' });
   }
 }

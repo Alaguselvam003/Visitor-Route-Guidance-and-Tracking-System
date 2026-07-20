@@ -25,4 +25,11 @@ public class HostController {
 
     }
 
+    @Autowired
+    private com.example.Visitor.Route.Guidance.and.Tracking.System.repository.ReceptionRepository receptionRepository;
+
+    @GetMapping("/waiting")
+    public java.util.List<com.example.Visitor.Route.Guidance.and.Tracking.System.entity.ReceptionCheckin> getWaiting(@RequestParam String hostName) {
+        return receptionRepository.findByHostNameAndStatus(hostName, "WAITING");
+    }
 }

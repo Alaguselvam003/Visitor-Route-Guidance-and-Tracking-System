@@ -19,4 +19,5 @@ public interface ReceptionRepository
 
         Optional<ReceptionCheckin> findTopByQrTokenOrderByIdDesc(String qrToken);
 
+        java.util.List<ReceptionCheckin> findByHostNameAndStatus(String hostName, String status);
 }

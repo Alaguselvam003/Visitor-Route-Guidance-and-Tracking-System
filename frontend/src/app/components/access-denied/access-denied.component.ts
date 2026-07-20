@@ -33,6 +33,8 @@ export class AccessDeniedComponent {
       this.router.navigate(['/route-guidance']);
     } else if (uRole === 'SECURITY') {
       this.router.navigate(['/gate']);
+    } else if (uRole === 'HOST') {
+      this.router.navigate(['/host']);
     } else {
       this.router.navigate(['/login']);
     }

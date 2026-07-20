@@ -50,6 +50,8 @@ export class LoginComponent {
               this.router.navigate(['/route-guidance']);
             } else if (role === 'SECURITY') {
               this.router.navigate(['/gate']);
+            } else if (role === 'HOST') {
+              this.router.navigate(['/host']);
             } else {
               this.router.navigate(['/access-denied']);
             }
