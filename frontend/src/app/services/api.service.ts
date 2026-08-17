@@ -24,7 +24,7 @@ export class ApiService {
   }
 
   login(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/login`, data, { responseType: 'text' });
+    return this.http.post(`${this.baseUrl}/auth/login`, data);
   }
 
   verifyOtp(email: string, otp: string): Observable<any> {

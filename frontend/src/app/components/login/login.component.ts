@@ -27,39 +27,33 @@ export class LoginComponent {
   onLogin() {
     this.isLoading = true;
     this.api.login({ email: this.email, password: this.password }).subscribe({
-      next: (res) => {
-        try {
-          const authData = JSON.parse(res);
-          localStorage.setItem('jwt_token', authData.token);
-          localStorage.setItem('user_role', authData.role);
-          localStorage.setItem('user_name', authData.name);
-          localStorage.setItem('user_email', authData.email);
-          if (authData.qrToken) {
-            localStorage.setItem('qr_token', authData.qrToken);
-          }
-
-          this.showAlert('Login successful!', 'success');
-
-          const role = authData.role ? authData.role.toUpperCase() : '';
-          setTimeout(() => {
-            if (role === 'ADMIN') {
-              this.router.navigate(['/admin']);
-            } else if (role === 'RECEPTIONIST') {
-              this.router.navigate(['/reception']);
-            } else if (role === 'VISITOR') {
-              this.router.navigate(['/route-guidance']);
-            } else if (role === 'SECURITY') {
-              this.router.navigate(['/gate']);
-            } else if (role === 'HOST') {
-              this.router.navigate(['/host']);
-            } else {
-              this.router.navigate(['/access-denied']);
-            }
-          }, 1500);
-        } catch (e) {
-          this.showAlert('Invalid server response format', 'error');
-          this.isLoading = false;
+      next: (authData) => {
+        localStorage.setItem('jwt_token', authData.token);
+        localStorage.setItem('user_role', authData.role);
+        localStorage.setItem('user_name', authData.name);
+        localStorage.setItem('user_email', authData.email);
+        if (authData.qrToken) {
+          localStorage.setItem('qr_token', authData.qrToken);
         }
+
+        this.showAlert('Login successful!', 'success');
+
+        const role = authData.role ? authData.role.toUpperCase() : '';
+        setTimeout(() => {
+          if (role === 'ADMIN') {
+            this.router.navigate(['/admin']);
+          } else if (role === 'RECEPTIONIST') {
+            this.router.navigate(['/reception']);
+          } else if (role === 'VISITOR') {
+            this.router.navigate(['/route-guidance']);
+          } else if (role === 'SECURITY') {
+            this.router.navigate(['/gate']);
+          } else if (role === 'HOST') {
+            this.router.navigate(['/host']);
+          } else {
+            this.router.navigate(['/access-denied']);
+          }
+        }, 1500);
       },
       error: (err) => {
         const errMsg = err.error || 'Invalid credentials';
