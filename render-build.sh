@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+
 set -o errexit
 
 echo ">>> Setting up JDK 21..."
