@@ -35,8 +35,7 @@ public class AuthService {
 
     @PostConstruct
     public void seedUsers() {
-        if (userRepository.count() == 0) {
-
+        if (userRepository.findByEmail("admin@company.com").isEmpty()) {
             User admin = new User();
             admin.setName("System Admin");
             admin.setEmail("admin@company.com");
@@ -44,7 +43,9 @@ public class AuthService {
             admin.setRole("ADMIN");
             admin.setVerified(true);
             userRepository.save(admin);
+        }
 
+        if (userRepository.findByEmail("reception@company.com").isEmpty()) {
             User reception = new User();
             reception.setName("Receptionist");
             reception.setEmail("reception@company.com");
@@ -52,7 +53,9 @@ public class AuthService {
             reception.setRole("RECEPTIONIST");
             reception.setVerified(true);
             userRepository.save(reception);
+        }
 
+        if (userRepository.findByEmail("security@company.com").isEmpty()) {
             User security = new User();
             security.setName("Security Guard");
             security.setEmail("security@company.com");
@@ -60,7 +63,9 @@ public class AuthService {
             security.setRole("SECURITY");
             security.setVerified(true);
             userRepository.save(security);
+        }
 
+        if (userRepository.findByEmail("host@company.com").isEmpty()) {
             User host = new User();
             host.setName("Meeting Host");
             host.setEmail("host@company.com");
