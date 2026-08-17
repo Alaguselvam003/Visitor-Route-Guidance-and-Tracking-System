@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 set -o errexit
 
@@ -11,6 +12,6 @@ export PATH="$JAVA_HOME/bin:$PATH"
 java -version
 echo ">>> Packaging application using Maven..."
 chmod +x mvnw
-./mvnw clean package -DskipTests
+JAVA_HOME="$PWD/target/jdk21" ./mvnw clean package -DskipTests
 
 echo ">>> Build completed successfully."
