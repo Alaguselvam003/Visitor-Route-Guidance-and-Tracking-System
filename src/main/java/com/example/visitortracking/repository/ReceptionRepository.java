@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.visitortracking.entity.ReceptionCheckin;
 
-public interface ReceptionRepository
-                extends JpaRepository<ReceptionCheckin, Long> {
+public interface ReceptionRepository extends JpaRepository<ReceptionCheckin, Long> {
 
         long countByStatus(String status);
 

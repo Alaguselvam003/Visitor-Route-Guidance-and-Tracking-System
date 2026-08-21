@@ -20,26 +20,15 @@ public class AnalyticsService {
 
         AnalyticsResponse r = new AnalyticsResponse();
 
-        r.setTotalVisitors(
-                visitorRepo.count());
+        r.setTotalVisitors(visitorRepo.count());
 
-        r.setInside(
-                visitorRepo.countByInside(
-                        true));
+        r.setInside(visitorRepo.countByInside(true));
 
-        r.setExited(
-                visitorRepo.countByInside(
-                        false));
+        r.setExited(visitorRepo.countByInside(false));
 
-        r.setApproved(
-                receptionRepo
-                        .countByStatus(
-                                "APPROVED"));
+        r.setApproved(receptionRepo.countByStatus( "APPROVED"));
 
-        r.setRejected(
-                receptionRepo
-                        .countByStatus(
-                                "REJECTED"));
+        r.setRejected( receptionRepo.countByStatus("REJECTED"));
 
         return r;
     }

@@ -11,13 +11,9 @@ public class RouteService {
     @Autowired
     private RouteRepository repo;
 
-    public String getRoute(
-            String destination) {
+    public String getRoute(String destination) {
 
-        return repo
-                .findByDestination(destination)
-                .map(route -> route.getInstructions())
-                .orElse("Route Not Found");
+        return repo.findByDestination(destination).map(route -> route.getInstructions()).orElse("Route Not Found");
     }
 
 }

@@ -22,23 +22,17 @@ public class NotificationService {
 
         log.setRecipient(email);
 
-        log.setSubject(
-                "Visitor Arrived");
+        log.setSubject("Visitor Arrived");
 
-        log.setType(
-                "EMAIL");
+        log.setType("EMAIL");
 
-        log.setStatus(
-                "SENT");
+        log.setStatus("SENT");
 
-        log.setSentAt(
-                LocalDateTime.now());
+        log.setSentAt(LocalDateTime.now());
 
         repo.save(log);
 
-        System.out.println(
-                "Host notified : "
-                        + visitorName);
+        System.out.println("Host notified : " + visitorName);
 
     }
 

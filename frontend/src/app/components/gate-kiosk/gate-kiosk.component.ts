@@ -91,7 +91,7 @@ export class GateKioskComponent implements OnInit, OnDestroy {
           this.visitor.visitorStatus = 'GATE_VERIFIED';
         }
         
-        // Auto redirect back to dashboard if role is VISITOR
+    
         const userRole = localStorage.getItem('user_role');
         if (userRole === 'VISITOR') {
           setTimeout(() => {

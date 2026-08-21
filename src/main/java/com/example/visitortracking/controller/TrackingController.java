@@ -1,7 +1,10 @@
 package com.example.visitortracking.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.visitortracking.dto.TrackingResponse;
 import com.example.visitortracking.service.TrackingService;
@@ -14,12 +17,9 @@ public class TrackingController {
     private TrackingService service;
 
     @GetMapping
-    public TrackingResponse track(
-            @RequestParam String qrToken
-    ) {
+    public TrackingResponse track(@RequestParam String qrToken) {
 
-        return service.track(
-                qrToken);
+        return service.track(qrToken);
 
     }
 

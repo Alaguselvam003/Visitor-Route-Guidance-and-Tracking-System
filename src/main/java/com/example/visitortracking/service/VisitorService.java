@@ -1,14 +1,15 @@
 package com.example.visitortracking.service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Optional;
+import java.util.Random;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.example.visitortracking.dto.DashboardResponse;
 import com.example.visitortracking.dto.VisitorRequest;
 import com.example.visitortracking.entity.HostNotification;
@@ -132,9 +133,7 @@ public class VisitorService {
 
         public String verifyOtp(String email, String otp) {
 
-                Visitor visitor = visitorRepository
-                                .findByEmail(email)
-                                .orElseThrow();
+                Visitor visitor = visitorRepository.findByEmail(email).orElseThrow();
 
                 if (!visitor.getOtp().equals(otp)) {
                         return "Invalid OTP";
@@ -153,11 +152,9 @@ public class VisitorService {
                 return "OTP Verified Successfully";
         }
 
-        public String validateQr(
-                        String token) {
+        public String validateQr(String token) {
 
-                Visitor visitor = repo.findByQrToken(token)
-                                .orElse(null);
+                Visitor visitor = repo.findByQrToken(token).orElse(null);
 
                 if (visitor == null) {
                         return "Invalid QR";
@@ -178,35 +175,27 @@ public class VisitorService {
 
         public String scanQr(String qrToken) {
 
-                Visitor visitor = visitorRepository
-                                .findByQrToken(qrToken)
-                                .orElseThrow(
-                                                () -> new RuntimeException(
-                                                                "Invalid QR"));
+                Visitor visitor = visitorRepository.findByQrToken(qrToken).orElseThrow(() -> new RuntimeException("Invalid QR"));
 
                 if (!visitor.isVerified()) {
                         return "Visitor not verified";
                 }
 
-                if (visitor.getQrExpiry() != null &&
-                                visitor.getQrExpiry()
-                                                .isBefore(LocalDateTime.now())) {
+                if (visitor.getQrExpiry() != null && visitor.getQrExpiry().isBefore(LocalDateTime.now())) {
 
                         return "QR Expired";
                 }
 
                 visitor.setInside(true);
 
-                visitor.setEntryTime(
-                                LocalDateTime.now());
+                visitor.setEntryTime(LocalDateTime.now());
 
                 visitorRepository.save(visitor);
 
                 return "Gate Entry Success";
         }
 
-        public String checkIn(
-                        String token) {
+        public String checkIn(String token) {
 
                 Visitor visitor = repo.findByQrToken(token)
                                 .orElse(null);
@@ -217,8 +206,7 @@ public class VisitorService {
 
                 visitor.setInside(true);
 
-                visitor.setEntryTime(
-                                LocalDateTime.now());
+                visitor.setEntryTime(LocalDateTime.now());
 
                 repo.save(visitor);
 
@@ -227,18 +215,12 @@ public class VisitorService {
 
         public Visitor getVisitorByQr(String token) {
 
-                return visitorRepository
-                                .findByQrToken(token)
-                                .orElseThrow(
-                                                () -> new RuntimeException(
-                                                                "Invalid QR Token"));
+                return visitorRepository.findByQrToken(token).orElseThrow(() -> new RuntimeException( "Invalid QR Token"));
         }
 
-        public String checkOut(
-                        String token) {
+        public String checkOut( String token) {
 
-                Visitor visitor = repo.findByQrToken(token)
-                                .orElse(null);
+                Visitor visitor = repo.findByQrToken(token).orElse(null);
 
                 if (visitor == null) {
                         return "Invalid QR";
@@ -246,31 +228,23 @@ public class VisitorService {
 
                 visitor.setInside(false);
 
-                visitor.setExitTime(
-                                LocalDateTime.now());
+                visitor.setExitTime(LocalDateTime.now());
 
                 repo.save(visitor);
 
-                emailService.sendEmail(
-                                visitor.getEmail(),
-                                "Exit Confirmation",
-                                "Visitor Exit Completed");
+                emailService.sendEmail(visitor.getEmail(),"Exit Confirmation","Visitor Exit Completed");
 
                 return "Visitor Exited";
         }
 
-        public String getJourney(
-                        String token) {
+        public String getJourney(String token) {
 
                 return "Journey Tracking Coming Soon";
         }
 
-        public String gateEntry(
-                        String token,
-                        String gate) {
+        public String gateEntry(String token,String gate) {
 
-                Visitor visitor = repo.findByQrToken(token)
-                                .orElse(null);
+                Visitor visitor = repo.findByQrToken(token).orElse(null);
 
                 if (visitor == null) {
                         return "Invalid Visitor";
@@ -278,24 +252,18 @@ public class VisitorService {
 
                 visitor.setInside(true);
 
-                visitor.setEntryTime(
-                                LocalDateTime.now());
+                visitor.setEntryTime( LocalDateTime.now());
 
                 repo.save(visitor);
 
-                movementService.log(
-                                token,
-                                gate);
+                movementService.log(token,gate);
 
                 return "Gate Access Granted";
         }
 
-        public String receptionCheckin(
-                        String token,
-                        String host) {
+        public String receptionCheckin( String token, String host) {
 
-                Visitor visitor = repo.findByQrToken(token)
-                                .orElse(null);
+                Visitor visitor = repo.findByQrToken(token).orElse(null);
 
                 if (visitor == null) {
                         return "Invalid Visitor";
@@ -312,20 +280,16 @@ public class VisitorService {
 
                 r.setStatus("WAITING");
 
-                r.setCheckinTime(
-                                LocalDateTime.now());
+                r.setCheckinTime( LocalDateTime.now());
 
                 receptionRepo.save(r);
 
-                movementService.log(
-                                token,
-                                "RECEPTION");
+                movementService.log( token,"RECEPTION");
 
                 return "Reception Check-in Completed";
         }
 
-        public String approveVisitor(
-                        String token) {
+        public String approveVisitor(String token) {
 
                 ReceptionCheckin reception = receptionRepo
                                 .findTopByQrTokenOrderByCheckinTimeDesc(token)
@@ -335,11 +299,9 @@ public class VisitorService {
                         return "Visitor Not Found";
                 }
 
-                reception.setStatus(
-                                "APPROVED");
+                reception.setStatus("APPROVED");
 
-                receptionRepo.save(
-                                reception);
+                receptionRepo.save( reception);
 
                 return "Visitor Approved";
         }
@@ -355,49 +317,38 @@ public class VisitorService {
                         return "Meeting Not Found";
                 }
 
-                Visitor visitor = repo.findByQrToken(token)
-                                .orElse(null);
+                Visitor visitor = repo.findByQrToken(token) .orElse(null);
 
                 if (visitor != null) {
 
                         visitor.setInside(false);
 
-                        visitor.setExitTime(
-                                        LocalDateTime.now());
+                        visitor.setExitTime(LocalDateTime.now());
 
                         visitor.setVisitorStatus("MEETING_COMPLETED");
 
                         repo.save(visitor);
 
-                        emailService.sendEmail(
-                                        visitor.getEmail(),
-                                        "Visit Completed",
-                                        "Meeting completed successfully");
+                        emailService.sendEmail(visitor.getEmail(),"Visit Completed","Meeting completed successfully");
                 }
 
-                reception.setStatus(
-                                "COMPLETED");
+                reception.setStatus("COMPLETED");
 
-                reception.setMeetingEndTime(
-                                LocalDateTime.now());
+                reception.setMeetingEndTime(LocalDateTime.now());
 
-                receptionRepo.save(
-                                reception);
+                receptionRepo.save(reception);
 
                 return "Meeting Completed + Visitor Exited";
         }
 
-        public Object notifications(
-                        String host) {
+        public Object notifications(String host) {
 
                 return notifyRepo.findByHost(host);
         }
 
-        public String readNotification(
-                        Long id) {
+        public String readNotification(Long id) {
 
-                HostNotification notification = notifyRepo.findById(id)
-                                .orElse(null);
+                HostNotification notification = notifyRepo.findById(id).orElse(null);
 
                 if (notification == null) {
                         return "Notification Not Found";
@@ -416,18 +367,13 @@ public class VisitorService {
 
                 d.setTotal(repo.count());
 
-                d.setWaiting(
-                                receptionRepo.countByStatus("WAITING"));
+                d.setWaiting(receptionRepo.countByStatus("WAITING"));
 
-                d.setApproved(
-                                receptionRepo.countByStatus("APPROVED"));
+                d.setApproved(receptionRepo.countByStatus("APPROVED"));
 
-                d.setInside(
-                                repo.countByInside(true));
+                d.setInside(repo.countByInside(true));
 
-                d.setExited(
-                                repo.count()
-                                                - repo.countByInside(true));
+                d.setExited(repo.count()- repo.countByInside(true));
 
                 return d;
         }
@@ -440,21 +386,13 @@ public class VisitorService {
 
                 Map<String, Object> map = new HashMap<>();
 
-                map.put(
-                                "registered",
-                                repo.count());
+                map.put("registered", repo.count());
 
-                map.put(
-                                "inside",
-                                repo.countByInside(true));
+                map.put("inside",repo.countByInside(true));
 
-                map.put(
-                                "approved",
-                                receptionRepo.countByStatus("APPROVED"));
+                map.put( "approved", receptionRepo.countByStatus("APPROVED"));
 
-                map.put(
-                                "completed",
-                                receptionRepo.countByStatus("COMPLETED"));
+                map.put("completed",receptionRepo.countByStatus("COMPLETED"));
 
                 return map;
         }
@@ -478,9 +416,7 @@ public class VisitorService {
 
                 Visitor visitor = visitorRepository
                                 .findByQrToken(qrToken)
-                                .orElseThrow(
-                                                () -> new RuntimeException(
-                                                                "Invalid QR"));
+                                .orElseThrow(() -> new RuntimeException("Invalid QR"));
 
                 if (!visitor.isInside()) {
                         return "Visitor already exited";
@@ -488,8 +424,7 @@ public class VisitorService {
 
                 visitor.setInside(false);
 
-                visitor.setExitTime(
-                                LocalDateTime.now());
+                visitor.setExitTime(LocalDateTime.now());
 
                 visitor.setVisitorStatus("EXITED");
 

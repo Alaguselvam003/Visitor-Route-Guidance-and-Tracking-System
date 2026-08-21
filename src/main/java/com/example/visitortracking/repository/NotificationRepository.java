@@ -4,9 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.visitortracking.entity.NotificationLog;
 
-public interface NotificationRepository
-extends JpaRepository<
-NotificationLog,
-Integer>{
+public interface NotificationRepository extends JpaRepository<NotificationLog, Integer>{
 
 }

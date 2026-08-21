@@ -6,10 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.visitortracking.entity.MovementLog;
 
-public interface MovementRepository
-        extends JpaRepository<MovementLog, Integer> {
+public interface MovementRepository extends JpaRepository<MovementLog, Integer> {
 
-    List<MovementLog> findByVisitorId(
-            Integer visitorId);
+    List<MovementLog> findByVisitorId(Integer visitorId);
 
 }

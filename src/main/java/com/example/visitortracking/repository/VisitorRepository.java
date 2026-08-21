@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.example.visitortracking.entity.Visitor;
 
-public interface VisitorRepository
-                extends JpaRepository<Visitor, Long> {
+public interface VisitorRepository extends JpaRepository<Visitor, Long> {
 
         boolean existsByEmail(String email);
 

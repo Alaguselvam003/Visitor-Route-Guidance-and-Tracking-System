@@ -18,40 +18,27 @@ public class TrackingService {
     @Autowired
     private VisitorMovementRepository movementRepo;
 
-    public TrackingResponse track(
-            String qrToken) {
+    public TrackingResponse track(String qrToken) {
 
-        Visitor v = visitorRepo
-                .findByQrToken(qrToken)
-                .orElseThrow();
+        Visitor v = visitorRepo.findByQrToken(qrToken).orElseThrow();
 
-        VisitorMovement m = movementRepo
-                .findTopByQrTokenOrderByIdDesc(
-                        qrToken)
-                .orElse(null);
+        VisitorMovement m = movementRepo.findTopByQrTokenOrderByIdDesc( qrToken).orElse(null);
 
         TrackingResponse r = new TrackingResponse();
 
-        r.setVisitor(
-                v.getName());
+        r.setVisitor(v.getName());
 
         if (m != null) {
 
-            r.setCurrentLocation(
-                    m.getLocation());
+            r.setCurrentLocation(m.getLocation());
 
-            r.setLastMovement(
-                    m.getLocation());
+            r.setLastMovement(m.getLocation());
 
         }
 
-        if ("MAIN_GATE"
-                .equals(
-                        r.getCurrentLocation())) {
+        if ("MAIN_GATE".equals(r.getCurrentLocation())) {
             r.setProgress("25%");
-        } else if ("RECEPTION"
-                .equals(
-                        r.getCurrentLocation())) {
+        } else if ("RECEPTION".equals(r.getCurrentLocation())) {
             r.setProgress("50%");
         } else {
             r.setProgress("100%");
