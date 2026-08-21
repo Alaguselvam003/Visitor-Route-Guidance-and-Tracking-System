@@ -1,1 +1,110 @@
-<p>reception works!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="container animate-card">
+    <div class="dashboard-header animate-fade-in">
+      <div>
+        <h2 class="h2-title">Reception Desk Dashboard</h2>
+        <p class="desc-text">Manage incoming visitor queues, host approvals, and meeting timings.</p>
+      </div>
+      <div class="btn-gap">
+        <button class="btn btn-outline" (click)="loadQueue()">🔄 Refresh Queue</button>
+        <button class="btn btn-outline" (click)="logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div *ngIf="alertMsg" class="alert animate-alert alert-box" [ngClass]="'alert-' + alertType">
+      {{ alertMsg }}
+    </div>
+
+    <div class="dashboard-grid">
+      
+      <div class="glass-panel animate-fade-in checkin-panel">
+        <h3 class="checkin-title">New Reception Entry</h3>
+        <form (ngSubmit)="onCheckin()">
+          <div class="form-group">
+            <label class="form-label">Visitor QR Token</label>
+            <input type="text" class="form-control" [(ngModel)]="newCheckin.qrToken" name="qrToken" required placeholder="e.g. V-9402">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Meeting Host Name</label>
+            <input type="text" class="form-control" [(ngModel)]="newCheckin.host" name="host" required placeholder="e.g. Dr. Jane Smith">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-block" [disabled]="isLoading">
+            {{ isLoading ? 'Checking in...' : 'Add to Queue' }}
+          </button>
+        </form>
+      </div>
+
+      <div class="glass-panel animate-fade-in queue-panel">
+        <h3 class="queue-title">Active Reception Queue</h3>
+        
+        <div *ngIf="queue.length === 0" class="empty-box">
+          <span class="empty-icon">👥</span>
+          <p>The queue is currently empty. Incoming visitors checked in at reception will appear here.</p>
+        </div>
+
+        <div *ngIf="queue.length > 0">
+          <table class="reception-table">
+            <thead>
+              <tr class="table-header">
+                <th class="th-padding">Pass Code</th>
+                <th class="th-padding">Host Name</th>
+                <th class="th-padding">Check-in Time</th>
+                <th class="th-padding">Status</th>
+                <th class="th-padding" style="text-align: right;">Actions / Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of queue" style="border-bottom: 1px solid var(--surface-border); color: var(--text-primary); font-size: 0.95rem;">
+                <td class="td-qr">{{ item.qrToken }}</td>
+                <td class="td-host">{{ item.hostName }}</td>
+                <td class="td-time">{{ item.checkinTime | date:'mediumTime' }}</td>
+                <td class="td-padding">
+                  <span [ngClass]="'status-badge ' + item.status.toLowerCase()">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="actions-col">
+                  <ng-container *ngIf="item.status === 'WAITING'">
+                    <span class="awaiting-label">
+                      <span class="spin-slow" style="display: inline-block;">⏳</span> Awaiting Host
+                    </span>
+                  </ng-container>
+                  <ng-container *ngIf="item.status === 'APPROVED'">
+                    <div class="approve-actions">
+                      <input type="number" [(ngModel)]="meetingDurations[item.qrToken]" class="duration-input" placeholder="Mins">
+                      <button class="btn-sm btn-start" (click)="startMeetingWithDuration(item.qrToken)">Start</button>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="item.status === 'IN_MEETING'">
+                    <span class="active-label">Meeting Active</span>
+                  </ng-container>
+                  <ng-container *ngIf="item.status === 'APPROVED' || item.status === 'IN_MEETING'">
+                    <button *ngIf="!item.nfcTag" class="btn-sm btn-outline" (click)="printNfcTag(item.qrToken)">Print NFC</button>
+                    <span *ngIf="item.nfcTag" class="nfc-label">
+                      {{ item.nfcTag }}
+                    </span>
+                  </ng-container>
+                  <ng-container *ngIf="item.status === 'COMPLETED'">
+                    <span class="completed-label">Visit Complete</span>
+                  </ng-container>
+                  <ng-container *ngIf="item.status === 'REJECTED'">
+                    <span class="denied-label">Denied</span>
+                  </ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

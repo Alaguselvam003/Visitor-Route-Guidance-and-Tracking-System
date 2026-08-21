@@ -250,6 +250,13 @@ export class RouteGuidanceComponent implements OnInit, OnDestroy {
     this.router.navigate(['/gate']);
   }
 
+  logout() {
+    this.clearSimulation();
+    this.stopStatusPolling();
+    localStorage.clear();
+    this.router.navigate(['/login']);
+  }
+
   updateCoordinates() {
     if (this.isDeviated) return;
     const step = this.steps[this.currentStep];

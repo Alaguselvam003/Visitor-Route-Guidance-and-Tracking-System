@@ -45,4 +45,28 @@ public class AuthController {
                 otp
         );
     }
+
+    @PostMapping("/forgot-password")
+    public org.springframework.http.ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        try {
+            String result = authService.forgotPassword(email);
+            return org.springframework.http.ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public org.springframework.http.ResponseEntity<?> resetPassword(
+            @RequestParam String email,
+            @RequestParam String otp,
+            @RequestParam String newPassword
+    ) {
+        try {
+            String result = authService.resetPassword(email, otp, newPassword);
+            return org.springframework.http.ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

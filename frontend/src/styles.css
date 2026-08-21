@@ -23,18 +23,66 @@
 }
 
 body {
-    background: #f3f4f6;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Floating soft light blobs for fresh premium feel */
+body::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 70%);
+    top: 10%;
+    left: 15%;
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: -1;
+    animation: floatBlob 20s infinite alternate ease-in-out;
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0) 70%);
+    bottom: 10%;
+    right: 15%;
+    border-radius: 50%;
+    filter: blur(50px);
+    z-index: -1;
+    animation: floatBlob2 25s infinite alternate ease-in-out;
+}
+
+@keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, 40px) scale(1.1); }
+}
+
+@keyframes floatBlob2 {
+    0% { transform: translate(0, 0) scale(1.1); }
+    100% { transform: translate(-80px, -50px) scale(0.9); }
 }
 
 .glass-panel {
-    background: var(--surface-color);
-    border: 1px solid var(--surface-border);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px 0 rgba(31, 38, 135, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+    box-shadow: 0 15px 35px 0 rgba(31, 38, 135, 0.1), 0 2px 5px rgba(0, 0, 0, 0.04);
 }
 
 .container {
@@ -64,43 +112,46 @@ p { line-height: 1.6; color: var(--text-secondary); }
 
 .form-control {
     width: 100%;
-    padding: 0.75rem 1rem;
-    background: var(--input-bg);
-    border: 1px solid var(--surface-border);
-    border-radius: 10px;
+    padding: 0.8rem 1.1rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
     color: var(--text-primary);
-    font-size: 1rem;
-    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .form-control:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    transform: translateY(-1px);
 }
 
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 500;
-    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
     gap: 0.5rem;
 }
 
 .btn-primary {
-    background: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
     color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: var(--primary-hover);
+    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+    transform: translateY(-2px);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -147,3 +198,101 @@ p { line-height: 1.6; color: var(--text-secondary); }
 .animate-fade-in { animation: fadeIn 0.5s ease forwards; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 .spin { animation: spin 1s linear infinite; }
+
+@keyframes pulseIcon {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+@keyframes pulseIconGreen {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.pulse-primary { animation: pulseIcon 2.5s infinite ease-in-out; }
+.pulse-success { animation: pulseIconGreen 2.5s infinite ease-in-out; }
+
+/* Human-written interactive animations and premium transition enhancements */
+
+/* Fade-in with slight scale for cards */
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-card {
+    animation: cardEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered animation delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+
+/* Pulse beacon dot animation on the tracking map */
+@keyframes beaconPulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.85;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+        filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.85;
+    }
+}
+
+.pulse-beacon {
+    transform-origin: center;
+    animation: beaconPulse 2s infinite ease-in-out;
+}
+
+/* Slide-in transition for toast notifications and alerts */
+@keyframes alertSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-alert {
+    animation: alertSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hover rotation for refresh button icons */
+.rotate-on-hover:hover {
+    transform: rotate(180deg);
+    transition: transform 0.4s ease;
+}
+
+/* Shimmer placeholder loading state animation */
+@keyframes shimmerEffect {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.shimmer {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmerEffect 1.5s infinite linear;
+}

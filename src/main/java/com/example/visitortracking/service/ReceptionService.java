@@ -93,7 +93,7 @@ public class ReceptionService {
                         String decision) {
 
                 ReceptionCheckin checkin = receptionRepo
-                                .findByQrToken(qrToken)
+                                .findTopByQrTokenOrderByIdDesc(qrToken)
                                 .orElse(null);
 
                 if (checkin == null) {
@@ -155,7 +155,7 @@ public class ReceptionService {
                 ReceptionCheckin checkin =
 
                                 receptionRepo
-                                                .findByQrToken(qrToken)
+                                                .findTopByQrTokenOrderByIdDesc(qrToken)
                                                 .orElse(null);
 
                 if (checkin == null) {
@@ -206,7 +206,7 @@ public class ReceptionService {
                 ReceptionCheckin checkin =
 
                                 receptionRepo
-                                                .findByQrToken(qrToken)
+                                                .findTopByQrTokenOrderByIdDesc(qrToken)
                                                 .orElse(null);
 
                 Visitor visitor =

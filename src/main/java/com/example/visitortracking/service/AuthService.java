@@ -2,6 +2,8 @@ package com.example.visitortracking.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 import com.example.visitortracking.entity.User;
 import com.example.visitortracking.repository.UserRepository;
@@ -81,6 +83,10 @@ public class AuthService {
             return "Email already registered";
         }
 
+        if (request.getPassword() == null || request.getPassword().length() < 6 || !request.getPassword().matches(".*[^a-zA-Z0-9].*")) {
+            return "Registration Failed: Password must be at least 6 characters long and contain at least one special character";
+        }
+
         User user=new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -149,5 +155,65 @@ public class AuthService {
         }
 
         throw new BadCredentialsException("Invalid Credentials");
+    }
+
+    public String forgotPassword(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            String otp = String.valueOf((int) ((Math.random() * 900000) + 100000));
+            user.setOtp(otp);
+            userRepository.save(user);
+            emailService.sendOtp(email, otp);
+            return "OTP sent successfully";
+        }
+
+        Optional<Visitor> visitorOpt = visitorRepository.findByEmail(email);
+        if (visitorOpt.isPresent()) {
+            Visitor visitor = visitorOpt.get();
+            String otp = String.valueOf((int) ((Math.random() * 900000) + 100000));
+            visitor.setOtp(otp);
+            visitor.setOtpExpiry(LocalDateTime.now().plusMinutes(10));
+            visitorRepository.save(visitor);
+            emailService.sendOtp(email, otp);
+            return "OTP sent successfully";
+        }
+
+        throw new RuntimeException("Email not registered");
+    }
+
+    public String resetPassword(String email, String otp, String newPassword) {
+        if (newPassword == null || newPassword.length() < 6 || !newPassword.matches(".*[^a-zA-Z0-9].*")) {
+            throw new RuntimeException("Password must be at least 6 characters long and contain at least one special character");
+        }
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (user.getOtp() != null && user.getOtp().equals(otp)) {
+                user.setPassword(passwordEncoder.encode(newPassword));
+                user.setOtp(null);
+                userRepository.save(user);
+                return "Password reset successfully";
+            }
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        Optional<Visitor> visitorOpt = visitorRepository.findByEmail(email);
+        if (visitorOpt.isPresent()) {
+            Visitor visitor = visitorOpt.get();
+            if (visitor.getOtp() != null && visitor.getOtp().equals(otp)) {
+                if (visitor.getOtpExpiry() != null && visitor.getOtpExpiry().isBefore(LocalDateTime.now())) {
+                    throw new RuntimeException("OTP has expired");
+                }
+                visitor.setPassword(passwordEncoder.encode(newPassword));
+                visitor.setOtp(null);
+                visitor.setOtpExpiry(null);
+                visitorRepository.save(visitor);
+                return "Password reset successfully";
+            }
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        throw new RuntimeException("Email not registered");
     }
 }

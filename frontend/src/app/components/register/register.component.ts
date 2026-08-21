@@ -8,7 +8,8 @@ import { Router, RouterModule } from '@angular/router';
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './register.component.html'
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
   user = { name: '', email: '', phone: '', idNumber: '', password: '' };
@@ -26,6 +27,23 @@ export class RegisterComponent {
   }
 
   onRegister() {
+    if (!this.user.email || !this.user.email.toLowerCase().endsWith('@gmail.com')) {
+      this.showAlert('Email address must end with @gmail.com', 'error');
+      return;
+    }
+
+    if (!this.user.phone || !/^\d{10}$/.test(this.user.phone)) {
+      this.showAlert('Phone number must contain exactly 10 digits', 'error');
+      return;
+    }
+
+    const password = this.user.password || '';
+    const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
+    if (password.length < 6 || !hasSpecialChar) {
+      this.showAlert('Password must be at least 6 characters long and contain at least one special character', 'error');
+      return;
+    }
+
     this.isLoading = true;
     this.api.register(this.user).subscribe({
       next: (res) => {

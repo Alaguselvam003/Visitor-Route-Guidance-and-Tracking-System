@@ -91,4 +91,12 @@ export class ApiService {
   completeMeeting(token: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/visitor/meeting/complete?token=${token}`, null, { responseType: 'text' });
   }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/forgot-password?email=${encodeURIComponent(email)}`, null, { responseType: 'text' });
+  }
+
+  resetPassword(email: string, otp: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&newPassword=${encodeURIComponent(newPassword)}`, null, { responseType: 'text' });
+  }
 }

@@ -1,0 +1,225 @@
+.container {
+  padding: 2rem;
+}
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--surface-border);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+.h2-title {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+.desc-text {
+  color: var(--text-secondary);
+}
+.btn-gap {
+  display: flex;
+  gap: 0.5rem;
+}
+.alert-box {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 10px;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  gap: 2rem;
+}
+.checkin-panel {
+  padding: 2rem;
+  height: fit-content;
+  animation-delay: 0.1s;
+}
+.checkin-title {
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+.btn-block {
+  margin-top: 1rem;
+}
+.queue-panel {
+  padding: 2rem;
+  overflow-x: auto;
+  animation-delay: 0.2s;
+}
+.queue-title {
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+}
+.empty-box {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--text-secondary);
+}
+.empty-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+.reception-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.table-header {
+  border-bottom: 2px solid var(--surface-border);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+.th-padding {
+  padding: 0.75rem 1rem;
+}
+.td-padding {
+  padding: 1rem;
+}
+.td-qr {
+  padding: 1rem;
+  font-family: monospace;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+.td-host {
+  padding: 1rem;
+  font-weight: 500;
+}
+.td-time {
+  padding: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+.actions-col {
+  padding: 1rem;
+  text-align: right;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  align-items: center;
+}
+.awaiting-label {
+  font-size: 0.85rem;
+  color: #d97706;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.approve-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+.duration-input {
+  width: 60px;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  text-align: center;
+}
+.active-label {
+  color: var(--success-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.nfc-label {
+  font-size: 0.75rem;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 700;
+}
+.completed-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+.denied-label {
+  color: var(--error-color);
+  font-size: 0.85rem;
+}
+
+.reception-table th { font-weight: 500; }
+.reception-table tr:hover { background: rgba(0, 0, 0, 0.015); }
+
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.status-badge.waiting {
+  background: #fef9c3;
+  border: 1px solid #eab308;
+  color: #854d0e;
+}
+.status-badge.approved {
+  background: #dbeafe;
+  border: 1px solid var(--primary-color);
+  color: #1e40af;
+}
+.status-badge.in_meeting {
+  background: #e0f2fe;
+  border: 1px solid #0284c7;
+  color: #075985;
+}
+.status-badge.completed {
+  background: #d1fae5;
+  border: 1px solid var(--success-color);
+  color: #065f46;
+}
+.status-badge.rejected {
+  background: #fee2e2;
+  border: 1px solid var(--error-color);
+  color: #991b1b;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+.btn-approve {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid var(--success-color);
+  color: #065f46;
+}
+.btn-approve:hover {
+  background: var(--success-color);
+  color: white;
+}
+.btn-reject {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--error-color);
+  color: #991b1b;
+}
+.btn-reject:hover {
+  background: var(--error-color);
+  color: white;
+}
+.btn-start {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--primary-color);
+  color: #1d4ed8;
+}
+.btn-start:hover {
+  background: var(--primary-color);
+  color: white;
+}
+@keyframes spinSlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.spin-slow { animation: spinSlow 3s linear infinite; }

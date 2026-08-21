@@ -1,52 +1,70 @@
-<div class="container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-  <div class="glass-panel animate-fade-in" style="width: 100%; max-width: 480px; padding: 3rem;">
-      <div class="text-center mb-4">
-          <h2 style="color: var(--primary-color);">Visitor Registration</h2>
-          <p>Register to receive your digital entry pass.</p>
-      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="register-wrapper">
+    <div class="register-card glass-panel animate-fade-in">
+        <div class="text-center mb-4">
+            <div class="icon-circle mb-3 pulse-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            <h2 class="register-title">Visitor Registration</h2>
+            <p class="register-secondary">Register to receive your digital entry pass.</p>
+        </div>
 
-      <div *ngIf="alertMsg" class="alert" [ngClass]="'alert-' + alertType">{{ alertMsg }}</div>
+        <div *ngIf="alertMsg" class="alert animate-alert" [ngClass]="'alert-' + alertType">{{ alertMsg }}</div>
 
-      <form *ngIf="!showOtpForm" (ngSubmit)="onRegister()">
-          <div class="form-group">
-              <label class="form-label">Full Name</label>
-              <input type="text" class="form-control" [(ngModel)]="user.name" name="name" required placeholder="John Doe">
-          </div>
-          <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" class="form-control" [(ngModel)]="user.email" name="email" required placeholder="john@company.com">
-          </div>
-          <div class="form-group">
-              <label class="form-label">Phone Number</label>
-              <input type="text" class="form-control" [(ngModel)]="user.phone" name="phone" required placeholder="9988776655">
-          </div>
-          <div class="form-group">
-              <label class="form-label">ID Number (Aadhaar/PAN/Passport)</label>
-              <input type="text" class="form-control" [(ngModel)]="user.idNumber" name="idNumber" required placeholder="ID-89249">
-          </div>
-          <div class="form-group">
-              <label class="form-label">Password</label>
-              <input type="password" class="form-control" [(ngModel)]="user.password" name="password" required placeholder="••••••••">
-          </div>
+        <form *ngIf="!showOtpForm" (ngSubmit)="onRegister()">
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" [(ngModel)]="user.name" name="name" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-control" [(ngModel)]="user.email" name="email" required placeholder="john@company.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="text" class="form-control" [(ngModel)]="user.phone" name="phone" required placeholder="9988776655">
+            </div>
+            <div class="form-group">
+                <label class="form-label">ID Number (Aadhaar/PAN/Passport)</label>
+                <input type="text" class="form-control" [(ngModel)]="user.idNumber" name="idNumber" required placeholder="ID-89249">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" [(ngModel)]="user.password" name="password" required placeholder="••••••••">
+            </div>
 
-          <button type="submit" class="btn btn-primary btn-block mt-4" [disabled]="isLoading">
-              {{ isLoading ? 'Processing...' : 'Register Visitor' }}
-          </button>
-      </form>
+            <button type="submit" class="btn btn-primary btn-block mt-4" [disabled]="isLoading">
+                {{ isLoading ? 'Processing...' : 'Register Visitor' }}
+            </button>
+        </form>
 
-      <form *ngIf="showOtpForm" (ngSubmit)="onVerify()">
-          <p class="text-center mb-4" style="color: var(--secondary-color);">Enter OTP sent to {{ user.email }}</p>
-          <div class="form-group">
-              <input type="text" class="form-control" [(ngModel)]="otp" name="otp" required placeholder="123456" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem;" maxlength="6">
-          </div>
+        <form *ngIf="showOtpForm" (ngSubmit)="onVerify()">
+            <p class="text-center mb-4 otp-text">Enter OTP sent to {{ user.email }}</p>
+            <div class="form-group">
+                <input type="text" class="form-control otp-input" [(ngModel)]="otp" name="otp" required placeholder="123456" maxlength="6">
+            </div>
 
-          <button type="submit" class="btn btn-primary btn-block mt-4" [disabled]="isLoading">
-              {{ isLoading ? 'Verifying...' : 'Verify & Create Pass' }}
-          </button>
-      </form>
+            <button type="submit" class="btn btn-primary btn-block mt-4" [disabled]="isLoading">
+                {{ isLoading ? 'Verifying...' : 'Verify & Create Pass' }}
+            </button>
+        </form>
 
-      <div class="text-center mt-4">
-          <p>Already registered? <a routerLink="/login" style="color: var(--primary-color); text-decoration: none;">Login here</a></p>
-      </div>
+        <div class="text-center mt-4">
+            <p>Already registered? <a routerLink="/login" style="color: var(--primary-color); text-decoration: none;">Login here</a></p>
+        </div>
+    </div>
   </div>
-</div>
+</body>
+</html>

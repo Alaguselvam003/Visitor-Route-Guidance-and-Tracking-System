@@ -25,7 +25,7 @@ public class HostService {
     ) {
 
         Optional<ReceptionCheckin> checkin =
-                repo.findByQrToken(qrToken);
+                repo.findTopByQrTokenOrderByIdDesc(qrToken);
 
         if (checkin.isEmpty()) {
 

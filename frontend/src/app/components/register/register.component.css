@@ -1,0 +1,42 @@
+.register-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.register-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 3rem;
+}
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+.pulse-primary {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.2) 100%);
+  color: var(--primary-color);
+}
+.register-title {
+  color: var(--primary-color);
+  margin-top: 0.5rem;
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+.register-secondary {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+.otp-text {
+  color: var(--secondary-color);
+}
+.otp-input {
+  text-align: center;
+  font-size: 1.5rem;
+  letter-spacing: 0.5rem;
+}

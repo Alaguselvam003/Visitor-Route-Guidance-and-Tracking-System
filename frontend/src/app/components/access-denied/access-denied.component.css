@@ -1,0 +1,26 @@
+.denied-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+}
+.denied-panel {
+  padding: 3rem;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+.denied-title {
+  color: var(--error-color);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+.denied-desc {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+.btn-gap {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}

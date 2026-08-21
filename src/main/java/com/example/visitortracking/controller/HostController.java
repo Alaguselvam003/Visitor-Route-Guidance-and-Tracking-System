@@ -28,6 +28,9 @@ public class HostController {
 
     @GetMapping("/waiting")
     public java.util.List<com.example.visitortracking.entity.ReceptionCheckin> getWaiting(@RequestParam String hostName) {
-        return receptionRepository.findByHostNameAndStatus(hostName, "WAITING");
+        String trimmedHost = hostName != null ? hostName.trim() : "";
+        return receptionRepository.findAll().stream()
+            .filter(r -> "WAITING".equalsIgnoreCase(r.getStatus()) && trimmedHost.equalsIgnoreCase(r.getHostName() != null ? r.getHostName().trim() : ""))
+            .collect(java.util.stream.Collectors.toList());
     }
 }

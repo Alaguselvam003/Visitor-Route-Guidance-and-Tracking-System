@@ -1,1 +1,79 @@
-<p>gate-kiosk works!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="kiosk-container animate-card">
+    
+    <div class="header">
+      <div>
+        <h1 class="h1-title">Gate Entry Kiosk</h1>
+        <p class="header-desc">Scan QR code or enter pass code manually to verify visitor entry</p>
+      </div>
+      <div class="btn-gap">
+        <button class="btn btn-outline btn-back" (click)="goBack()">Back to Dashboard</button>
+        <button class="btn btn-outline btn-back" (click)="logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="grid-layout">
+      
+      <div class="card-padding animate-card delay-100">
+        <h3 class="card-title">Verify Pass Code</h3>
+        
+        <div class="search-row">
+          <input type="text" class="search-input" [(ngModel)]="token" placeholder="Enter pass code (e.g. VP-2026-000105)">
+          <button class="btn btn-primary search-btn" (click)="fetchVisitor()" [disabled]="!token">Find Pass</button>
+        </div>
+
+        <div class="scanner-box">
+          <div id="reader" style="width: 100%; border: none;"></div>
+        </div>
+      </div>
+
+      <div *ngIf="visitor" class="card-padding animate-card delay-200">
+        <h3 class="details-title">Visitor Details</h3>
+        
+        <div class="details-grid">
+          <div>
+            <span class="label-text">Visitor Name</span>
+            <span class="value-text">{{ visitor.name }}</span>
+          </div>
+          <div>
+            <span class="label-text">Pass Code</span>
+            <span class="code-text">{{ visitor.passCode || visitor.qrToken }}</span>
+          </div>
+          <div>
+            <span class="label-text">Current Status</span>
+            <span class="badge-style" [style.background]="getStatusColor(visitor.visitorStatus)">
+              {{ visitor.visitorStatus }}
+            </span>
+          </div>
+          <div>
+            <span class="label-text">Verification Status</span>
+            <span class="status-text" [style.color]="visitor.gateVerified ? '#10b981' : '#f59e0b'">
+              {{ visitor.gateVerified ? '✅ VERIFIED' : '⏳ PENDING SECURITY' }}
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="!visitor.gateVerified" class="btn-gap">
+          <button class="btn btn-primary btn-confirm" (click)="confirmVerification()">
+            Confirm Security Verification
+          </button>
+        </div>
+        <div *ngIf="visitor.gateVerified" class="success-banner">
+          ✓ Security verification completed. Visitor may proceed to Reception.
+        </div>
+      </div>
+
+      <div *ngIf="resultMsg" class="alert animate-alert" [ngClass]="'alert-' + resultType" style="padding: 1rem; border-radius: 8px; font-weight: 500;">
+        {{ resultMsg }}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

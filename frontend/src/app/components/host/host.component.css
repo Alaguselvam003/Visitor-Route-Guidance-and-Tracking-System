@@ -1,0 +1,106 @@
+.host-container {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  font-family: 'Outfit', sans-serif;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1rem;
+}
+.h1-title {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+.header-desc {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+.btn-signout {
+  padding: 0.5rem 1rem;
+}
+.alert-box {
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+.card-layout {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.card-title {
+  margin: 0;
+  color: #334155;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.btn-refresh {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+}
+.visitor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #f8fafc;
+}
+.visitor-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+.visitor-time {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+.btn-approve {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  border-radius: 6px;
+}
+.empty-box {
+  text-align: center;
+  padding: 3rem 0;
+  color: #94a3b8;
+}
+.empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+.empty-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #64748b;
+}
+.empty-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: #94a3b8;
+}

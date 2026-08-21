@@ -1,1 +1,144 @@
-<p>admin-dashboard works!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="admin-wrapper">
+    <div class="admin-header animate-fade-in">
+      <div>
+        <h2 class="h2-title">Admin Control Center</h2>
+        <p class="desc-text">Monitor active visitor flows and verify logs.</p>
+      </div>
+      <div class="btn-gap">
+        <button class="btn btn-outline" (click)="refreshAll()">Refresh Data</button>
+        <button class="btn btn-outline" (click)="logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="card animate-card" style="border-top: 3px solid #3b82f6;">
+        <div class="stats-title">Total Passes Issued</div>
+        <div class="stats-val">{{ stats.total }}</div>
+      </div>
+      <div class="card animate-card delay-100" style="border-top: 3px solid #10b981;">
+        <div class="stats-title">Visitors Inside</div>
+        <div class="stats-val-green">{{ stats.inside }}</div>
+      </div>
+      <div class="card animate-card delay-200" style="border-top: 3px solid #eab308;">
+        <div class="stats-title">Queue at Reception</div>
+        <div class="stats-val-yellow">{{ stats.waiting }}</div>
+      </div>
+      <div class="card animate-card delay-300" style="border-top: 3px solid #6c757d;">
+        <div class="stats-title">Exited Visitors</div>
+        <div class="stats-val-gray">{{ stats.exited }}</div>
+      </div>
+    </div>
+
+    <div *ngIf="getActiveAlerts().length > 0" class="alert-card animate-fade-in">
+      <div class="alert-header">
+        <span style="font-size: 1.5rem;">🚨</span>
+        <h3 class="alert-title">SECURITY ALERTS DETECTED</h3>
+      </div>
+      <div class="alert-list">
+        <div *ngFor="let alert of getActiveAlerts()" class="alert-item">
+          <span>
+            <strong class="alert-desc">{{ alert.name }}</strong> ({{ alert.qrToken }}):
+            <span class="alert-type">{{ alert.securityAlert }}</span>
+          </span>
+          <button class="alert-btn btn" (click)="clearAlert(alert.qrToken!)">Acknowledge</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card animate-card delay-100" style="margin-bottom: 2rem;">
+      <h3 class="map-title">Live Visitor Tracking Map</h3>
+
+      <div class="map-svg-container">
+        <svg viewBox="0 0 800 320" width="100%" class="map-svg">
+          <rect x="50" y="80" width="160" height="150" rx="6" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2" />
+          <text x="130" y="140" fill="#1e293b" font-size="13" font-weight="500" text-anchor="middle">Security Gate</text>
+          <text x="130" y="175" fill="#3b82f6" font-size="12" font-weight="bold" text-anchor="middle">{{ roomCounts.gate }} present</text>
+
+          <rect x="310" y="50" width="180" height="120" rx="6" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2" />
+          <text x="400" y="105" fill="#1e293b" font-size="13" font-weight="500" text-anchor="middle">Reception Desk</text>
+          <text x="400" y="135" fill="#4b5563" font-size="12" font-weight="bold" text-anchor="middle">{{ roomCounts.reception }} present</text>
+
+          <rect x="590" y="80" width="160" height="150" rx="6" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2" />
+          <text x="670" y="140" fill="#1e293b" font-size="13" font-weight="500" text-anchor="middle">Conf. Room A</text>
+          <text x="670" y="175" fill="#10b981" font-size="12" font-weight="bold" text-anchor="middle">{{ roomCounts.meeting }} present</text>
+        </svg>
+      </div>
+
+      <div class="occupancy-grid">
+        <div class="occupancy-box">
+          <strong class="occupancy-header-gate">At Security Gate ({{ roomCounts.gate }})</strong>
+          <ul class="occupancy-list">
+            <li *ngFor="let name of getPeopleInRoom('gate')">{{ name }}</li>
+            <li *ngIf="getPeopleInRoom('gate').length === 0" class="empty-occupancy">No visitors present</li>
+          </ul>
+        </div>
+        <div class="occupancy-box">
+          <strong class="occupancy-header-reception">At Reception Desk ({{ roomCounts.reception }})</strong>
+          <ul class="occupancy-list">
+            <li *ngFor="let name of getPeopleInRoom('reception')">{{ name }}</li>
+            <li *ngIf="getPeopleInRoom('reception').length === 0" class="empty-occupancy">No visitors present</li>
+          </ul>
+        </div>
+        <div class="occupancy-box">
+          <strong class="occupancy-header-meeting">In Conference Room A ({{ roomCounts.meeting }})</strong>
+          <ul class="occupancy-list">
+            <li *ngFor="let name of getPeopleInRoom('meeting')">{{ name }}</li>
+            <li *ngIf="getPeopleInRoom('meeting').length === 0" class="empty-occupancy">No visitors present</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card animate-card delay-200">
+      <div class="directory-header">
+        <h3 class="directory-title">Visitor Log Directory</h3>
+        <input type="text" class="form-control search-input" [(ngModel)]="searchQuery" placeholder="Search visitors...">
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="directory-table">
+          <thead>
+            <tr class="table-header">
+              <th class="th-padding">Name</th>
+              <th class="th-padding">Email & Phone</th>
+              <th class="th-padding">ID Number</th>
+              <th class="th-padding">Pass Code</th>
+              <th class="th-padding">Entry/Exit Log</th>
+              <th class="th-padding">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredVisitors()" class="tr-row">
+              <td class="td-name">{{ item.name }}</td>
+              <td class="td-contact">
+                <div>{{ item.email }}</div>
+                <div class="td-phone">{{ item.phone }}</div>
+              </td>
+              <td class="td-id">{{ item.idNumber || '-' }}</td>
+              <td class="td-pass">{{ item.qrToken || 'Wait OTP' }}</td>
+              <td class="td-log">
+                <div *ngIf="item.entryTime">IN: {{ formatTime(item.entryTime) }}</div>
+                <div *ngIf="item.exitTime">OUT: {{ formatTime(item.exitTime) }}</div>
+                <div *ngIf="!item.entryTime && !item.exitTime" class="no-log-label">No logs recorded</div>
+              </td>
+              <td class="td-status">
+                <span [ngClass]="'status-badge ' + getStatusClass(item)">
+                  {{ getStatusLabel(item) }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

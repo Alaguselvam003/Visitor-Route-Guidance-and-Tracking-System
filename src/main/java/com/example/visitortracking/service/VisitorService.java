@@ -48,6 +48,18 @@ public class VisitorService {
         public String register(VisitorRequest request) {
                 try {
 
+                        if (request.getEmail() == null || !request.getEmail().toLowerCase().endsWith("@gmail.com")) {
+                                return "Registration Failed: Email must end with @gmail.com";
+                        }
+
+                        if (request.getPhone() == null || !request.getPhone().matches("^\\d{10}$")) {
+                                return "Registration Failed: Phone number must contain exactly 10 digits";
+                        }
+
+                        if (request.getPassword() == null || request.getPassword().length() < 6 || !request.getPassword().matches(".*[^a-zA-Z0-9].*")) {
+                                return "Registration Failed: Password must be at least 6 characters long and contain at least one special character";
+                        }
+
                         if ("blacklisted@test.com".equalsIgnoreCase(request.getEmail()) ||
                             "9999999999".equals(request.getPhone())) {
                                 return "Registration Failed: Visitor is blacklisted.";
@@ -494,7 +506,7 @@ public class VisitorService {
                 visitor.setNfcTag(nfcTag);
                 visitorRepository.save(visitor);
 
-                receptionRepo.findByQrToken(qrToken).ifPresent(checkin -> {
+                receptionRepo.findTopByQrTokenOrderByIdDesc(qrToken).ifPresent(checkin -> {
                         checkin.setNfcTag(nfcTag);
                         receptionRepo.save(checkin);
                 });

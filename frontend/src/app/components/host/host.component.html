@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="host-container animate-card">
+    
+    <div class="header animate-fade-in">
+      <div>
+        <h1 class="h1-title">Welcome, {{ hostName }}</h1>
+        <p class="header-desc">Manage approvals for visitors waiting to meet you</p>
+      </div>
+      <button class="btn btn-outline btn-signout" (click)="logout()">Sign Out</button>
+    </div>
+
+    <div *ngIf="alertMsg" class="alert mt-4 animate-alert alert-box" [ngClass]="'alert-' + alertType">
+      {{ alertMsg }}
+    </div>
+
+    <div class="card-layout animate-card">
+      <div class="card-header">
+        <h3 class="card-title">Visitor Requests Waiting for You</h3>
+        <button class="btn btn-outline btn-refresh" (click)="fetchWaitingVisitors()">Refresh List</button>
+      </div>
+
+      <div *ngIf="waitingList.length > 0; else emptyState">
+        <div *ngFor="let item of waitingList" class="visitor-item">
+          <div>
+            <p class="visitor-title">Pass Code: {{ item.qrToken }}</p>
+            <span class="visitor-time">Checked-in at: {{ item.checkinTime | date:'shortTime' }}</span>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-primary btn-approve" (click)="approveVisitor(item.qrToken)">
+              Approve Entry
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-box">
+          <span class="empty-icon">🎉</span>
+          <p class="empty-title">No visitors waiting for you right now.</p>
+          <p class="empty-desc">We'll show them here when someone checks in at Reception.</p>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+</body>
+</html>
