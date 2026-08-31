@@ -34,7 +34,27 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Phone Number</label>
-                <input type="text" class="form-control" [(ngModel)]="user.phone" name="phone" required placeholder="9988776655">
+                <div class="phone-input-group">
+                    <select class="form-control country-code-select" [(ngModel)]="countryCode" name="countryCode" required>
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+61">+61 (AU)</option>
+                        <option value="+971">+971 (AE)</option>
+                        <option value="+65">+65 (SG)</option>
+                        <option value="+81">+81 (JP)</option>
+                    </select>
+                    <input type="text" class="form-control phone-input" [(ngModel)]="user.phone" name="phone" required placeholder="9988776655">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">OTP Expiry Duration</label>
+                <select class="form-control" [(ngModel)]="otpExpiryMinutes" name="otpExpiryMinutes" required>
+                    <option [value]="2">2 Minutes (Minimum)</option>
+                    <option [value]="3">3 Minutes</option>
+                    <option [value]="4">4 Minutes</option>
+                    <option [value]="5">5 Minutes (Maximum)</option>
+                </select>
             </div>
             <div class="form-group">
                 <label class="form-label">ID Number (Aadhaar/PAN/Passport)</label>

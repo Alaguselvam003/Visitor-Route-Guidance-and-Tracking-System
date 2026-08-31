@@ -53,7 +53,7 @@ public class VisitorService {
                                 return "Registration Failed: Email must end with @gmail.com";
                         }
 
-                        if (request.getPhone() == null || !request.getPhone().matches("^\\d{10}$")) {
+                        if (request.getPhone() == null || !request.getPhone().matches("^(\\+\\d{1,4})?\\d{10}$")) {
                                 return "Registration Failed: Phone number must contain exactly 10 digits";
                         }
 
@@ -64,6 +64,11 @@ public class VisitorService {
                         if ("blacklisted@test.com".equalsIgnoreCase(request.getEmail()) ||
                             "9999999999".equals(request.getPhone())) {
                                 return "Registration Failed: Visitor is blacklisted.";
+                        }
+
+                        int expiryMinutes = 5;
+                        if (request.getOtpExpiryMinutes() != null && request.getOtpExpiryMinutes() >= 2 && request.getOtpExpiryMinutes() <= 5) {
+                                expiryMinutes = request.getOtpExpiryMinutes();
                         }
 
                         Optional<Visitor> existingByEmail = visitorRepository.findByEmail(request.getEmail());
@@ -78,10 +83,11 @@ public class VisitorService {
                                         old.setIdNumber(request.getIdNumber());
                                         old.setPassword(passwordEncoder.encode(request.getPassword()));
                                         old.setOtp(generateOtp());
-                                        old.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+                                        old.setOtpExpiry(LocalDateTime.now().plusMinutes(expiryMinutes));
                                         old.setVisitorStatus("REGISTERED");
                                         visitorRepository.save(old);
-                                        emailService.sendOtp(old.getEmail(), old.getOtp());
+                                        String referenceId = String.valueOf(100000 + new Random().nextInt(900000));
+                                        emailService.sendOtp(old.getEmail(), old.getOtp(), referenceId, expiryMinutes);
                                         return "OTP Sent Again";
                                 }
                                 return "Account already verified. Please login";
@@ -111,10 +117,11 @@ public class VisitorService {
                         visitor.setVerified(false);
                         visitor.setVisitorStatus("REGISTERED");
                         visitor.setOtp(generateOtp());
-                        visitor.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+                        visitor.setOtpExpiry(LocalDateTime.now().plusMinutes(expiryMinutes));
 
                         visitorRepository.save(visitor);
-                        emailService.sendOtp(visitor.getEmail(), visitor.getOtp());
+                        String referenceId = String.valueOf(100000 + new Random().nextInt(900000));
+                        emailService.sendOtp(visitor.getEmail(), visitor.getOtp(), referenceId, expiryMinutes);
 
                         return "Visitor Registered Successfully";
                 } catch (org.springframework.dao.DataIntegrityViolationException e) {
@@ -134,6 +141,10 @@ public class VisitorService {
         public String verifyOtp(String email, String otp) {
 
                 Visitor visitor = visitorRepository.findByEmail(email).orElseThrow();
+
+                if (visitor.getOtpExpiry() != null && visitor.getOtpExpiry().isBefore(LocalDateTime.now())) {
+                        return "OTP has expired";
+                }
 
                 if (!visitor.getOtp().equals(otp)) {
                         return "Invalid OTP";

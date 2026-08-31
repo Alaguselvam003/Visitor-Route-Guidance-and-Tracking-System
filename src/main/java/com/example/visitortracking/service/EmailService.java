@@ -86,4 +86,18 @@ public class EmailService {
                 "OTP Verification",
                 "Your OTP is: " + otp);
     }
+
+    public String sendOtp(
+            String email,
+            String otp,
+            String referenceId,
+            int expiryMinutes) {
+
+        return sendEmail(
+                email,
+                "OTP Verification",
+                "Your OTP is: " + otp + "\n" +
+                "Your ID Number is: " + referenceId + "\n" +
+                "This OTP is valid for " + expiryMinutes + " minutes.");
+    }
 }

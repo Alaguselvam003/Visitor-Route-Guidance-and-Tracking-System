@@ -15,4 +15,6 @@ private String idNumber;
 
 private String password;
 
+private Integer otpExpiryMinutes;
+
 }

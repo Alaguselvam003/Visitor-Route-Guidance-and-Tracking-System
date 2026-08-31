@@ -1,3 +1,13 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: 
+    radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.03) 0px, transparent 50%),
+    var(--bg-gradient-start);
+  overflow: auto;
+}
+
 .guidance-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -5,18 +15,18 @@
 }
 
 .header-section {
-  border-bottom: 1px solid #cbd5e1;
+  border-bottom: 1px solid var(--surface-border) !important;
   padding-bottom: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .header-section h1 {
   font-size: 2rem;
-  color: #1f2937;
+  color: var(--text-primary) !important;
 }
 
 .header-section p {
-  color: #4b5563;
+  color: var(--text-secondary) !important;
   font-size: 1rem;
 }
 
@@ -40,15 +50,32 @@
 }
 
 .card {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  background: var(--surface-color) !important;
+  border: 1px solid var(--surface-border) !important;
+  border-radius: 12px !important;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 2px 10px -2px rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 15px 35px -5px rgba(6, 182, 212, 0.1), 0 5px 15px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Custom Overrides for state-specific colored cards */
+.card[style*="#eff6ff"], .card[style*="rgb(239, 246, 255)"], .card[style*="eff6ff"] {
+  background: rgba(6, 182, 212, 0.1) !important;
+  border: 1px solid rgba(6, 182, 212, 0.3) !important;
+}
+
+.card[style*="#f0fdf4"], .card[style*="rgb(240, 253, 244)"], .card[style*="f0fdf4"] {
+  background: rgba(34, 197, 94, 0.1) !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
 }
 
 .card h3 {
-  color: #1f2937;
+  color: var(--text-primary) !important;
   font-size: 1.2rem;
   margin-bottom: 0.75rem;
 }
@@ -57,15 +84,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #cbd5e1;
-  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--surface-border) !important;
+  background: var(--input-bg) !important;
+  padding: 1rem 1.5rem !important;
   margin-bottom: 1rem;
 }
 
 .pass-card .badge {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 1px solid #10b981;
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: var(--success-color) !important;
+  border: 1px solid var(--success-color) !important;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -76,33 +104,38 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  background: var(--surface-color) !important;
 }
 
 .qr-box {
-  background: #ffffff;
-  padding: 8px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
+  background: #ffffff !important;
+  padding: 8px !important;
+  border: 1px solid var(--surface-border) !important;
+  border-radius: 8px !important;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .pass-details p {
-  color: #4b5563;
+  color: var(--text-secondary) !important;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
 }
 
+.pass-details p strong {
+  color: var(--text-primary) !important;
+}
+
 .pass-details .code {
-  color: #3b82f6;
+  color: var(--primary-color) !important;
   font-family: monospace;
   font-weight: bold;
 }
 
 .button-group {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .button-group button {
@@ -116,9 +149,45 @@
 }
 
 .svg-container {
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--surface-border) !important;
   border-radius: 8px;
   overflow: hidden;
+  background: #090d16 !important;
+}
+
+.svg-container svg rect[fill="#f1f5f9"] {
+  fill: #090d16 !important;
+}
+
+.svg-container svg rect[fill="#e2e8f0"] {
+  fill: #1e293b !important;
+  stroke: #334155 !important;
+}
+
+.svg-container svg text {
+  fill: var(--text-primary) !important;
+}
+
+.svg-container svg rect[fill="#fee2e2"] {
+  fill: rgba(239, 68, 68, 0.15) !important;
+  stroke: var(--error-color) !important;
+}
+
+.svg-container svg text[fill="#991b1b"] {
+  fill: #fca5a5 !important;
+}
+
+.svg-container svg path[stroke="#3b82f6"] {
+  stroke: var(--primary-color) !important;
+}
+
+.svg-container svg path[stroke="#ef4444"] {
+  stroke: var(--error-color) !important;
+}
+
+.svg-container svg circle[stroke="#3b82f6"] {
+  stroke: var(--primary-color) !important;
+  fill: #090d16 !important;
 }
 
 .visitor-dot {
@@ -128,7 +197,7 @@
 .stepper {
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid #cbd5e1;
+  border-top: 1px solid var(--surface-border) !important;
   padding-top: 1.5rem;
 }
 
@@ -145,8 +214,8 @@
 }
 
 .step-num {
-  background: #cbd5e1;
-  color: #4b5563;
+  background: var(--input-bg) !important;
+  color: var(--text-secondary) !important;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -158,11 +227,12 @@
 }
 
 .step.active .step-num {
-  background: #3b82f6;
-  color: #ffffff;
+  background: var(--primary-color) !important;
+  color: #020617 !important;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.4) !important;
 }
 
 .step-text {
-  color: #1f2937;
+  color: var(--text-primary) !important;
   font-size: 0.85rem;
 }

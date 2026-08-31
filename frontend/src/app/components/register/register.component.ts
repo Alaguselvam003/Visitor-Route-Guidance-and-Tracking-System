@@ -13,6 +13,8 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class RegisterComponent {
   user = { name: '', email: '', phone: '', idNumber: '', password: '' };
+  countryCode = '+91';
+  otpExpiryMinutes = 5;
   otp = '';
   showOtpForm = false;
   isLoading = false;
@@ -45,7 +47,14 @@ export class RegisterComponent {
     }
 
     this.isLoading = true;
-    this.api.register(this.user).subscribe({
+    const fullPhone = this.countryCode + this.user.phone;
+    const registerPayload = {
+      ...this.user,
+      phone: fullPhone,
+      otpExpiryMinutes: Number(this.otpExpiryMinutes)
+    };
+
+    this.api.register(registerPayload).subscribe({
       next: (res) => {
         if (res && res.includes('Registration Failed')) {
           this.showAlert(res, 'error');
@@ -67,9 +76,14 @@ export class RegisterComponent {
     this.isLoading = true;
     this.api.verifyOtp(this.user.email, this.otp).subscribe({
       next: (res) => {
-        this.showAlert('OTP Verified successfully! Please log in.', 'success');
-        this.isLoading = false;
-        setTimeout(() => this.router.navigate(['/login']), 2000);
+        if (res && res.includes('Successfully')) {
+          this.showAlert('OTP Verified successfully! Please log in.', 'success');
+          this.isLoading = false;
+          setTimeout(() => this.router.navigate(['/login']), 2000);
+        } else {
+          this.showAlert(res || 'Invalid OTP', 'error');
+          this.isLoading = false;
+        }
       },
       error: (err) => {
         this.showAlert('Invalid OTP', 'error');

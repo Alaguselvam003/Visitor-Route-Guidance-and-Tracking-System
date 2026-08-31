@@ -1,6 +1,17 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: 
+    radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.03) 0px, transparent 50%),
+    var(--bg-gradient-start);
+  overflow: auto;
+}
+
 .container {
   padding: 2rem;
 }
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -9,92 +20,131 @@
   padding-bottom: 1.5rem;
   margin-bottom: 2rem;
 }
+
 .h2-title {
   color: var(--primary-color);
   margin-bottom: 0.5rem;
   font-size: 2rem;
 }
+
 .desc-text {
   color: var(--text-secondary);
 }
+
 .btn-gap {
   display: flex;
   gap: 0.5rem;
 }
+
 .alert-box {
   margin-bottom: 1.5rem;
   padding: 1rem;
   border-radius: 10px;
 }
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 2.5fr;
   gap: 2rem;
 }
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.glass-panel {
+  background: var(--surface-color) !important;
+  border: 1px solid var(--surface-border) !important;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 2px 10px -2px rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px -5px rgba(6, 182, 212, 0.1), 0 5px 15px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
 .checkin-panel {
   padding: 2rem;
   height: fit-content;
   animation-delay: 0.1s;
 }
+
 .checkin-title {
   color: var(--text-primary);
   margin-bottom: 1.5rem;
   font-size: 1.25rem;
 }
+
 .btn-block {
   margin-top: 1rem;
 }
+
 .queue-panel {
   padding: 2rem;
   overflow-x: auto;
   animation-delay: 0.2s;
 }
+
 .queue-title {
   color: var(--text-primary);
   margin-bottom: 1.5rem;
   font-size: 1.25rem;
 }
+
 .empty-box {
   text-align: center;
   padding: 3rem 0;
   color: var(--text-secondary);
 }
+
 .empty-icon {
   font-size: 2.5rem;
   display: block;
   margin-bottom: 1rem;
 }
+
 .reception-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
 }
+
 .table-header {
   border-bottom: 2px solid var(--surface-border);
   color: var(--text-secondary);
   font-size: 0.85rem;
 }
+
 .th-padding {
   padding: 0.75rem 1rem;
 }
+
 .td-padding {
   padding: 1rem;
 }
+
 .td-qr {
   padding: 1rem;
   font-family: monospace;
   font-weight: bold;
   color: var(--primary-color);
 }
+
 .td-host {
   padding: 1rem;
   font-weight: 500;
 }
+
 .td-time {
   padding: 1rem;
   color: var(--text-secondary);
   font-size: 0.85rem;
 }
+
 .actions-col {
   padding: 1rem;
   text-align: right;
@@ -103,53 +153,63 @@
   justify-content: flex-end;
   align-items: center;
 }
+
 .awaiting-label {
   font-size: 0.85rem;
-  color: #d97706;
+  color: var(--warning-color);
   font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
 }
+
 .approve-actions {
   display: flex;
   align-items: center;
   gap: 0.25rem;
   justify-content: flex-end;
 }
+
 .duration-input {
   width: 60px;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  border: 1px solid #cbd5e1;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid var(--surface-border);
+  background: var(--input-bg);
+  color: var(--text-primary);
   font-size: 0.85rem;
   text-align: center;
 }
+
 .active-label {
   color: var(--success-color);
   font-size: 0.85rem;
   font-weight: 500;
 }
+
 .nfc-label {
   font-size: 0.75rem;
-  background: #e0f2fe;
-  color: #0369a1;
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--primary-color);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   font-family: monospace;
   font-weight: 700;
+  border: 1px solid rgba(6, 182, 212, 0.3);
 }
+
 .completed-label {
   color: var(--text-secondary);
   font-size: 0.85rem;
 }
+
 .denied-label {
   color: var(--error-color);
   font-size: 0.85rem;
 }
 
 .reception-table th { font-weight: 500; }
-.reception-table tr:hover { background: rgba(0, 0, 0, 0.015); }
+.reception-table tr:hover { background: rgba(255, 255, 255, 0.02); }
 
 .status-badge {
   display: inline-block;
@@ -159,30 +219,35 @@
   font-weight: 600;
   letter-spacing: 0.05em;
 }
+
 .status-badge.waiting {
-  background: #fef9c3;
-  border: 1px solid #eab308;
-  color: #854d0e;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid var(--warning-color);
+  color: #fde047;
 }
+
 .status-badge.approved {
-  background: #dbeafe;
+  background: rgba(6, 182, 212, 0.15);
   border: 1px solid var(--primary-color);
-  color: #1e40af;
+  color: #a5f3fc;
 }
+
 .status-badge.in_meeting {
-  background: #e0f2fe;
-  border: 1px solid #0284c7;
-  color: #075985;
-}
-.status-badge.completed {
-  background: #d1fae5;
+  background: rgba(34, 197, 94, 0.15);
   border: 1px solid var(--success-color);
-  color: #065f46;
+  color: #86efac;
 }
+
+.status-badge.completed {
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid var(--secondary-color);
+  color: #f1f5f9;
+}
+
 .status-badge.rejected {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.15);
   border: 1px solid var(--error-color);
-  color: #991b1b;
+  color: #fca5a5;
 }
 
 .btn-sm {
@@ -194,32 +259,39 @@
   border: none;
   transition: all 0.2s ease;
 }
+
 .btn-approve {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(34, 197, 94, 0.15);
   border: 1px solid var(--success-color);
-  color: #065f46;
+  color: #86efac;
 }
+
 .btn-approve:hover {
   background: var(--success-color);
-  color: white;
+  color: #020617;
 }
+
 .btn-reject {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.15);
   border: 1px solid var(--error-color);
-  color: #991b1b;
+  color: #fca5a5;
 }
+
 .btn-reject:hover {
   background: var(--error-color);
-  color: white;
+  color: #020617;
 }
+
 .btn-start {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(6, 182, 212, 0.15);
   border: 1px solid var(--primary-color);
-  color: #1d4ed8;
+  color: #a5f3fc;
 }
+
 .btn-start:hover {
   background: var(--primary-color);
-  color: white;
+  color: #020617;
 }
+
 @keyframes spinSlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .spin-slow { animation: spinSlow 3s linear infinite; }
