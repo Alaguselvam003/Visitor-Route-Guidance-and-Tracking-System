@@ -3,50 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Host Portal - Visitor Guidance</title>
 </head>
 <body>
   <div class="host-container animate-card">
     
+   
     <div class="header animate-fade-in">
-      <div>
-        <h1 class="h1-title">Welcome, {{ hostName }}</h1>
-        <p class="header-desc">Manage approvals for visitors waiting to meet you</p>
+      <div class="header-info">
+        <div class="host-avatar">
+          <span>👤</span>
+        </div>
+        <div>
+          <h1 class="h1-title">Welcome, {{ hostName }}</h1>
+          <p class="header-desc">Manage approvals and active visitor meetings</p>
+        </div>
       </div>
-      <button class="btn btn-outline btn-signout" (click)="logout()">Sign Out</button>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-refresh" (click)="fetchAllHostData()" [disabled]="isLoading">
+          {{ isLoading ? 'Refreshing...' : '🔄 Refresh' }}
+        </button>
+        <button class="btn btn-outline btn-signout" (click)="logout()">Sign Out</button>
+      </div>
     </div>
 
-    <div *ngIf="alertMsg" class="alert mt-4 animate-alert alert-box" [ngClass]="'alert-' + alertType">
-      {{ alertMsg }}
+    
+    <div *ngIf="alertMsg" class="alert animate-alert alert-box" [ngClass]="'alert-' + alertType">
+      <span>{{ alertMsg }}</span>
+      <button class="btn btn-outline alert-dismiss-btn" (click)="alertMsg = ''">Dismiss</button>
     </div>
 
-    <div class="card-layout animate-card">
-      <div class="card-header">
-        <h3 class="card-title">Visitor Requests Waiting for You</h3>
-        <button class="btn btn-outline btn-refresh" (click)="fetchWaitingVisitors()">Refresh List</button>
-      </div>
+    
+    <div class="host-tabs-bar animate-card">
+      <button class="tab-btn" [class.active]="selectedTab === 'waiting'" (click)="selectedTab = 'waiting'">
+        <span class="tab-icon">⏳</span>
+        <span class="tab-label">Pending Approvals</span>
+        <span class="tab-count-badge" [class.badge-alert]="waitingList.length > 0">{{ waitingList.length }}</span>
+      </button>
 
-      <div *ngIf="waitingList.length > 0; else emptyState">
-        <div *ngFor="let item of waitingList" class="visitor-item">
+      <button class="tab-btn" [class.active]="selectedTab === 'active'" (click)="selectedTab = 'active'">
+        <span class="tab-icon">🤝</span>
+        <span class="tab-label">Active Meetings</span>
+        <span class="tab-count-badge badge-active">{{ activeList.length }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="selectedTab === 'completed'" (click)="selectedTab = 'completed'">
+        <span class="tab-icon">📋</span>
+        <span class="tab-label">Meeting History</span>
+        <span class="tab-count-badge">{{ completedList.length }}</span>
+      </button>
+    </div>
+
+    
+    <div class="card-layout animate-card mt-4">
+      
+     
+      <div *ngIf="selectedTab === 'waiting'">
+        <div class="section-title-row">
           <div>
-            <p class="visitor-title">Pass Code: {{ item.qrToken }}</p>
-            <span class="visitor-time">Checked-in at: {{ item.checkinTime | date:'shortTime' }}</span>
-          </div>
-          <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-primary btn-approve" (click)="approveVisitor(item.qrToken)">
-              Approve Entry
-            </button>
+            <h3 class="card-title">Visitors Awaiting Host Approval</h3>
+            <p class="section-subtitle">Visitors checked in at reception waiting for your permission</p>
           </div>
         </div>
+
+        <div *ngIf="waitingList.length > 0; else noWaiting">
+          <div *ngFor="let item of waitingList" class="visitor-card animate-fade-in">
+            <div class="visitor-details-col">
+              <div class="pass-tag">
+                <span class="pass-tag-label">PASS CODE</span>
+                <span class="pass-tag-code">{{ item.qrToken }}</span>
+              </div>
+              <div class="visitor-meta">
+                <span class="meta-item">🕒 Checked-in: <strong>{{ item.checkinTime | date:'shortTime' }}</strong></span>
+                <span class="meta-badge badge-waiting">⏳ Awaiting Approval</span>
+              </div>
+            </div>
+            <div class="visitor-actions-col">
+              <button class="btn btn-primary btn-approve" (click)="approveVisitor(item.qrToken)">
+                ✓ Approve Entry
+              </button>
+              <button class="btn btn-reject btn-sm" (click)="rejectVisitor(item.qrToken)">
+                ✕ Reject
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noWaiting>
+          <div class="empty-box">
+            <span class="empty-icon">✨</span>
+            <p class="empty-title">No pending visitor approval requests</p>
+            <p class="empty-desc">New requests will appear here when visitors arrive at the reception desk.</p>
+          </div>
+        </ng-template>
       </div>
 
-      <ng-template #emptyState>
-        <div class="empty-box">
-          <span class="empty-icon">🎉</span>
-          <p class="empty-title">No visitors waiting for you right now.</p>
-          <p class="empty-desc">We'll show them here when someone checks in at Reception.</p>
+     
+      <div *ngIf="selectedTab === 'active'">
+        <div class="section-title-row">
+          <div>
+            <h3 class="card-title">Active & Ongoing Meetings</h3>
+            <p class="section-subtitle">Visitors currently authorized, en route, or meeting with you</p>
+          </div>
         </div>
-      </ng-template>
+
+        <div *ngIf="activeList.length > 0; else noActive">
+          <div *ngFor="let item of activeList" class="visitor-card visitor-card-active animate-fade-in">
+            <div class="visitor-details-col">
+              <div class="pass-tag">
+                <span class="pass-tag-label">PASS CODE</span>
+                <span class="pass-tag-code">{{ item.qrToken }}</span>
+              </div>
+              <div class="visitor-meta">
+                <span class="meta-item">🕒 Started: <strong>{{ (item.meetingStartTime || item.checkinTime) | date:'shortTime' }}</strong></span>
+                <span class="meta-badge badge-in-meeting">
+                  {{ item.status === 'APPROVED' || item.status === 'HOST_APPROVED' ? '📍 En Route to Room' : '🤝 Meeting Active' }}
+                </span>
+                <span *ngIf="item.nfcTag" class="meta-item nfc-tag-badge">💳 NFC: {{ item.nfcTag }}</span>
+              </div>
+            </div>
+            <div class="visitor-actions-col">
+             
+              <button class="btn btn-complete-meeting" (click)="completeMeeting(item.qrToken)" title="Mark meeting completed and record visitor checkout">
+                <span class="btn-check-icon">✓</span> Complete Meeting
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noActive>
+          <div class="empty-box">
+            <span class="empty-icon">🤝</span>
+            <p class="empty-title">No active meetings in progress</p>
+            <p class="empty-desc">When you approve a visitor, their active meeting session will be displayed here.</p>
+          </div>
+        </ng-template>
+      </div>
+
+     
+      <div *ngIf="selectedTab === 'completed'">
+        <div class="section-title-row">
+          <div>
+            <h3 class="card-title">Completed Visit History</h3>
+            <p class="section-subtitle">Record of past visitor meetings and checkouts</p>
+          </div>
+        </div>
+
+        <div *ngIf="completedList.length > 0; else noCompleted">
+          <div *ngFor="let item of completedList" class="visitor-card visitor-card-completed animate-fade-in">
+            <div class="visitor-details-col">
+              <div class="pass-tag">
+                <span class="pass-tag-label">PASS CODE</span>
+                <span class="pass-tag-code">{{ item.qrToken }}</span>
+              </div>
+              <div class="visitor-meta">
+                <span class="meta-item">Arrival: {{ item.checkinTime | date:'shortTime' }}</span>
+                <span *ngIf="item.meetingEndTime" class="meta-item">End Time: {{ item.meetingEndTime | date:'shortTime' }}</span>
+                <span class="meta-badge" [ngClass]="item.status === 'REJECTED' ? 'badge-rejected' : 'badge-completed'">
+                  {{ item.status === 'REJECTED' ? '✕ Denied Entry' : '✓ Visit Completed' }}
+                </span>
+              </div>
+            </div>
+            <div class="visitor-actions-col">
+              <span class="status-concluded-label">
+                {{ item.status === 'REJECTED' ? 'Rejected' : 'Concluded' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noCompleted>
+          <div class="empty-box">
+            <span class="empty-icon">📋</span>
+            <p class="empty-title">No completed visit records yet</p>
+            <p class="empty-desc">Finished meetings and visitor checkouts will be archived here.</p>
+          </div>
+        </ng-template>
+      </div>
+
     </div>
 
   </div>

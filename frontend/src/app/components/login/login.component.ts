@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
@@ -11,10 +11,11 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnDestroy {
   email = '';
   password = '';
   isLoading = false;
+  isResending = false;
   alertMsg = '';
   alertType = 'error';
 
@@ -24,11 +25,47 @@ export class LoginComponent {
   newPassword = '';
   showOtpStage = false;
 
+  otpTimerSeconds = 180;
+  timerDisplay = '03:00';
+  private timerInterval: any = null;
+
   constructor(private api: ApiService, private router: Router) {}
+
+  ngOnDestroy() {
+    this.stopOtpTimer();
+  }
 
   showAlert(msg: string, type: string) {
     this.alertMsg = msg;
     this.alertType = type;
+  }
+
+  startOtpTimer() {
+    this.stopOtpTimer();
+    this.otpTimerSeconds = 180;
+    this.updateTimerDisplay();
+
+    this.timerInterval = setInterval(() => {
+      if (this.otpTimerSeconds > 0) {
+        this.otpTimerSeconds--;
+        this.updateTimerDisplay();
+      } else {
+        this.stopOtpTimer();
+      }
+    }, 1000);
+  }
+
+  stopOtpTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  updateTimerDisplay() {
+    const mins = Math.floor(this.otpTimerSeconds / 60);
+    const secs = this.otpTimerSeconds % 60;
+    this.timerDisplay = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
   }
 
   onLogin() {
@@ -58,14 +95,14 @@ export class LoginComponent {
           } else if (role === 'HOST') {
             this.router.navigate(['/host']);
           } else {
-            this.router.navigate(['/access-denied']);
+            this.router.navigate(['/login']);
           }
-        }, 1500);
+        }, 1000);
       },
       error: (err) => {
-        const errMsg = err.error || 'Invalid credentials';
-        this.showAlert(errMsg, 'error');
         this.isLoading = false;
+        const msg = err.error || 'Invalid credentials or user not verified';
+        this.showAlert(msg, 'error');
       }
     });
   }
@@ -77,6 +114,7 @@ export class LoginComponent {
     this.forgotOtp = '';
     this.newPassword = '';
     this.alertMsg = '';
+    this.stopOtpTimer();
   }
 
   onRequestOtp() {
@@ -91,11 +129,38 @@ export class LoginComponent {
         this.showAlert('OTP sent successfully! Check your email.', 'success');
         this.showOtpStage = true;
         this.isLoading = false;
+        this.startOtpTimer();
       },
       error: (err) => {
         const errMsg = err.error || 'Failed to send OTP';
         this.showAlert(errMsg, 'error');
         this.isLoading = false;
+      }
+    });
+  }
+
+  onResendForgotOtp() {
+    if (this.otpTimerSeconds > 0 || this.isResending) {
+      return;
+    }
+
+    if (!this.forgotEmail) {
+      this.showAlert('Email address is missing', 'error');
+      return;
+    }
+
+    this.isResending = true;
+    this.api.forgotPassword(this.forgotEmail).subscribe({
+      next: (res) => {
+        this.showAlert('New reset OTP sent to ' + this.forgotEmail + '!', 'success');
+        this.forgotOtp = '';
+        this.isResending = false;
+        this.startOtpTimer();
+      },
+      error: (err) => {
+        const errMsg = err.error || 'Failed to resend OTP';
+        this.showAlert(errMsg, 'error');
+        this.isResending = false;
       }
     });
   }
@@ -114,6 +179,7 @@ export class LoginComponent {
     this.isLoading = true;
     this.api.resetPassword(this.forgotEmail, this.forgotOtp, this.newPassword).subscribe({
       next: (res) => {
+        this.stopOtpTimer();
         this.showAlert('Password reset successful! Please login with your new password.', 'success');
         this.isLoading = false;
         setTimeout(() => {

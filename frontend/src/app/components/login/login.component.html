@@ -90,7 +90,13 @@
                         </svg>
                     </div>
                     <h2 class="success-title">Enter Reset OTP</h2>
-                    <p class="text-secondary-label">Enter OTP sent to {{ forgotEmail }} and set new password.</p>
+                    <p class="text-secondary-label mb-2">Enter OTP sent to {{ forgotEmail }} and set new password.</p>
+                    <div class="otp-timer-container text-center mb-3">
+                        <div class="otp-timer-badge" [ngClass]="{'timer-low': otpTimerSeconds < 60 && otpTimerSeconds > 0, 'timer-expired': otpTimerSeconds === 0}">
+                            <span class="timer-icon">⏱️</span>
+                            <span class="timer-text">Resend Countdown: <strong>{{ timerDisplay }}</strong></span>
+                        </div>
+                    </div>
                 </div>
 
                 <form (ngSubmit)="onResetPassword()">
@@ -106,7 +112,15 @@
                     <button type="submit" class="btn btn-primary btn-block mt-4" [disabled]="isLoading">
                         {{ isLoading ? 'Resetting...' : 'Reset Password' }}
                     </button>
-                    <button type="button" class="btn btn-block mt-2 btn-back" (click)="toggleForgot(false)">
+
+                    <div class="resend-row text-center mt-3">
+                        <span class="resend-label">Didn't receive code? </span>
+                        <button type="button" class="btn-resend" (click)="onResendForgotOtp()" [disabled]="isResending || otpTimerSeconds > 0">
+                            {{ isResending ? 'Resending...' : (otpTimerSeconds > 0 ? 'Resend in ' + timerDisplay : 'Resend OTP') }}
+                        </button>
+                    </div>
+
+                    <button type="button" class="btn btn-block mt-3 btn-back" (click)="toggleForgot(false)">
                         Cancel
                     </button>
                 </form>

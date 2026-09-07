@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
@@ -11,21 +11,57 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnDestroy {
   user = { name: '', email: '', phone: '', idNumber: '', password: '' };
   countryCode = '+91';
-  otpExpiryMinutes = 5;
   otp = '';
   showOtpForm = false;
   isLoading = false;
+  isResending = false;
   alertMsg = '';
   alertType = 'error';
 
+  otpTimerSeconds = 180; // 3-minute countdown timer
+  timerDisplay = '03:00';
+  private timerInterval: any = null;
+
   constructor(private api: ApiService, private router: Router) {}
+
+  ngOnDestroy() {
+    this.stopOtpTimer();
+  }
 
   showAlert(msg: string, type: string) {
     this.alertMsg = msg;
     this.alertType = type;
+  }
+
+  startOtpTimer() {
+    this.stopOtpTimer();
+    this.otpTimerSeconds = 180;
+    this.updateTimerDisplay();
+
+    this.timerInterval = setInterval(() => {
+      if (this.otpTimerSeconds > 0) {
+        this.otpTimerSeconds--;
+        this.updateTimerDisplay();
+      } else {
+        this.stopOtpTimer();
+      }
+    }, 1000);
+  }
+
+  stopOtpTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  updateTimerDisplay() {
+    const mins = Math.floor(this.otpTimerSeconds / 60);
+    const secs = this.otpTimerSeconds % 60;
+    this.timerDisplay = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
   }
 
   onRegister() {
@@ -50,8 +86,7 @@ export class RegisterComponent {
     const fullPhone = this.countryCode + this.user.phone;
     const registerPayload = {
       ...this.user,
-      phone: fullPhone,
-      otpExpiryMinutes: Number(this.otpExpiryMinutes)
+      phone: fullPhone
     };
 
     this.api.register(registerPayload).subscribe({
@@ -60,26 +95,58 @@ export class RegisterComponent {
           this.showAlert(res, 'error');
           this.isLoading = false;
         } else {
-          this.showAlert('Registration successful! Check email for OTP.', 'success');
+          this.showAlert('Registration successful! Check email for OTP (Valid for 5 mins).', 'success');
           this.showOtpForm = true;
           this.isLoading = false;
+          this.startOtpTimer();
         }
       },
       error: (err) => {
-        this.showAlert('Registration failed', 'error');
+        this.showAlert('Registration failed: ' + (err.error || 'Server error'), 'error');
         this.isLoading = false;
       }
     });
   }
 
+  onResendOtp() {
+    if (this.otpTimerSeconds > 0 || this.isResending) {
+      return;
+    }
+
+    if (!this.user.email) {
+      this.showAlert('Email is missing.', 'error');
+      return;
+    }
+
+    this.isResending = true;
+    this.api.resendOtp(this.user.email).subscribe({
+      next: (res) => {
+        this.isResending = false;
+        this.showAlert('New OTP sent to ' + this.user.email + '! (Valid for 5 mins)', 'success');
+        this.otp = '';
+        this.startOtpTimer();
+      },
+      error: (err) => {
+        this.isResending = false;
+        this.showAlert('Failed to resend OTP: ' + (err.error || 'Server error'), 'error');
+      }
+    });
+  }
+
   onVerify() {
+    if (!this.otp || this.otp.trim().length !== 6) {
+      this.showAlert('Please enter the complete 6-digit OTP', 'error');
+      return;
+    }
+
     this.isLoading = true;
-    this.api.verifyOtp(this.user.email, this.otp).subscribe({
+    this.api.verifyOtp(this.user.email, this.otp.trim()).subscribe({
       next: (res) => {
         if (res && res.includes('Successfully')) {
+          this.stopOtpTimer();
           this.showAlert('OTP Verified successfully! Please log in.', 'success');
           this.isLoading = false;
-          setTimeout(() => this.router.navigate(['/login']), 2000);
+          setTimeout(() => this.router.navigate(['/login']), 1800);
         } else {
           this.showAlert(res || 'Invalid OTP', 'error');
           this.isLoading = false;

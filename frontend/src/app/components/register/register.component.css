@@ -55,3 +55,94 @@
 .phone-input {
   flex: 1;
 }
+
+.otp-timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.otp-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  color: #38bdf8;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.otp-timer-badge.timer-low {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.otp-timer-badge.timer-expired {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.timer-icon {
+  font-size: 1rem;
+}
+
+.otp-validity-note {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+
+.resend-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.btn-resend {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.2rem 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-resend:hover:not([disabled]) {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.btn-resend[disabled] {
+  color: var(--text-secondary);
+  opacity: 0.6;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.btn-link-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.btn-link-back:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}

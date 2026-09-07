@@ -31,6 +31,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/visitor/verify-otp?email=${email}&otp=${otp}`, null, { responseType: 'text' });
   }
 
+  resendOtp(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/visitor/resend-otp?email=${encodeURIComponent(email)}`, null, { responseType: 'text' });
+  }
+
   gateEntry(token: string, gate: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/visitor/gate-entry?token=${token}&gate=${gate}`, null, { responseType: 'text' });
   }
@@ -84,8 +88,20 @@ export class ApiService {
     return this.http.get<any[]>(`${this.baseUrl}/host/waiting?hostName=${encodeURIComponent(hostName)}`);
   }
 
+  getHostMeetings(hostName: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/host/meetings?hostName=${encodeURIComponent(hostName)}`);
+  }
+
   hostApproveVisitor(qrToken: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/host/approve?qrToken=${encodeURIComponent(qrToken)}`, null, { responseType: 'text' });
+  }
+
+  hostRejectVisitor(qrToken: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/host/reject?qrToken=${encodeURIComponent(qrToken)}`, null, { responseType: 'text' });
+  }
+
+  hostCompleteMeeting(qrToken: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/host/complete-meeting?qrToken=${encodeURIComponent(qrToken)}`, null, { responseType: 'text' });
   }
 
   completeMeeting(token: string): Observable<any> {

@@ -68,40 +68,60 @@ export class GateKioskComponent implements OnInit, OnDestroy {
   fetchVisitor() {
     this.resultMsg = '';
     this.visitor = null;
+    const cleanToken = this.token ? this.token.trim() : '';
+
+    if (!cleanToken) {
+      this.resultType = 'error';
+      this.resultMsg = '⚠️ Pass Code Required: Please enter or scan a valid visitor pass code (e.g. VP-2026-000105).';
+      return;
+    }
     
-    this.api.getVisitorByQr(this.token).subscribe({
+    this.api.getVisitorByQr(cleanToken).subscribe({
       next: (res) => {
+        if (!res || !res.name) {
+          this.resultType = 'error';
+          this.resultMsg = `⚠️ Invalid Pass Code: No active visitor pass record found for "${cleanToken}". Please check the code.`;
+          return;
+        }
         this.visitor = res;
+        this.resultMsg = '';
       },
       error: (err) => {
         this.resultType = 'error';
-        this.resultMsg = 'Invalid Pass: Visitor details not found for this pass code.';
+        this.resultMsg = `⚠️ Invalid Pass Code: Visitor pass "${cleanToken}" not found. Please ensure the visitor has completed registration and OTP verification.`;
       }
     });
   }
 
   confirmVerification() {
     this.resultMsg = '';
-    this.api.verifyPassCode(this.token).subscribe({
+    const cleanToken = this.token ? this.token.trim() : '';
+    if (!cleanToken) {
+      this.resultType = 'error';
+      this.resultMsg = '⚠️ Pass Code is required for verification.';
+      return;
+    }
+
+    this.api.verifyPassCode(cleanToken).subscribe({
       next: (res) => {
         this.resultType = 'success';
-        this.resultMsg = 'Security verification completed. Visitor may now proceed to Reception.';
+        this.resultMsg = '✓ Security verification completed! Visitor is authorized and may proceed to Reception.';
         if (this.visitor) {
           this.visitor.gateVerified = true;
           this.visitor.visitorStatus = 'GATE_VERIFIED';
         }
         
-    
         const userRole = localStorage.getItem('user_role');
         if (userRole === 'VISITOR') {
           setTimeout(() => {
             this.router.navigate(['/route-guidance']);
-          }, 2000);
+          }, 1800);
         }
       },
       error: (err) => {
         this.resultType = 'error';
-        this.resultMsg = 'Verification failed: ' + (err.error || 'Server error.');
+        const serverMsg = err.error?.message || err.error || 'Server error during pass verification.';
+        this.resultMsg = `⚠️ Verification Failed: ${serverMsg}`;
       }
     });
   }

@@ -28,6 +28,11 @@ public class VisitorController {
         return service.verifyOtp(email,otp);
     }
 
+    @PostMapping("/resend-otp")
+    public String resendOtp( @RequestParam String email) {
+        return service.resendOtp(email);
+    }
+
     @GetMapping("/qr/{token}")
     public ResponseEntity<?> getVisitorByQr(@PathVariable String token){
         return ResponseEntity.ok(service.getVisitorByQr(token));

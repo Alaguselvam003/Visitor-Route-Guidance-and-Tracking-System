@@ -67,9 +67,6 @@ public class VisitorService {
                         }
 
                         int expiryMinutes = 5;
-                        if (request.getOtpExpiryMinutes() != null && request.getOtpExpiryMinutes() >= 2 && request.getOtpExpiryMinutes() <= 5) {
-                                expiryMinutes = request.getOtpExpiryMinutes();
-                        }
 
                         Optional<Visitor> existingByEmail = visitorRepository.findByEmail(request.getEmail());
                         if (existingByEmail.isPresent()) {
@@ -129,6 +126,33 @@ public class VisitorService {
                 } catch (Exception e) {
                         return "Registration Failed: " + e.getMessage();
                 }
+        }
+
+        public String resendOtp(String email) {
+                if (email == null || email.trim().isEmpty()) {
+                        return "Email is required";
+                }
+                Optional<Visitor> visitorOpt = visitorRepository.findByEmail(email.trim());
+                if (visitorOpt.isEmpty()) {
+                        return "Visitor not found with email: " + email;
+                }
+                Visitor visitor = visitorOpt.get();
+                if (visitor.isVerified()) {
+                        return "Account already verified. Please login";
+                }
+                if (visitor.isBlacklisted()) {
+                        return "Visitor is blacklisted.";
+                }
+
+                int expiryMinutes = 5;
+                visitor.setOtp(generateOtp());
+                visitor.setOtpExpiry(LocalDateTime.now().plusMinutes(expiryMinutes));
+                visitorRepository.save(visitor);
+
+                String referenceId = String.valueOf(100000 + new Random().nextInt(900000));
+                emailService.sendOtp(visitor.getEmail(), visitor.getOtp(), referenceId, expiryMinutes);
+
+                return "OTP Resent Successfully";
         }
 
         private String generateOtp() {
@@ -324,30 +348,26 @@ public class VisitorService {
                                 .findTopByQrTokenOrderByCheckinTimeDesc(token)
                                 .orElse(null);
 
-                if (reception == null) {
+                Visitor visitor = repo.findByQrToken(token).orElse(null);
+
+                if (reception == null && visitor == null) {
                         return "Meeting Not Found";
                 }
 
-                Visitor visitor = repo.findByQrToken(token) .orElse(null);
-
                 if (visitor != null) {
-
                         visitor.setInside(false);
-
                         visitor.setExitTime(LocalDateTime.now());
-
                         visitor.setVisitorStatus("MEETING_COMPLETED");
-
                         repo.save(visitor);
-
-                        emailService.sendEmail(visitor.getEmail(),"Visit Completed","Meeting completed successfully");
+                        movementService.log(token, "MEETING_COMPLETED");
+                        emailService.sendEmail(visitor.getEmail(), "Visit Completed", "Meeting completed successfully");
                 }
 
-                reception.setStatus("COMPLETED");
-
-                reception.setMeetingEndTime(LocalDateTime.now());
-
-                receptionRepo.save(reception);
+                if (reception != null) {
+                        reception.setStatus("COMPLETED");
+                        reception.setMeetingEndTime(LocalDateTime.now());
+                        receptionRepo.save(reception);
+                }
 
                 return "Meeting Completed + Visitor Exited";
         }
